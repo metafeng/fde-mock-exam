@@ -37,27 +37,29 @@
 - 不要写「课程中」「原文」。
 - 输出合法 JSON 数组，追加到 `data/glossary/gX.json`（X 为模块编号 0–9），再运行 `python3 scripts/build.py` 校验。
 
-## 图解与举个例子
+## 图解 visual（图标化，少字）
 
-### 1. `example`：举个例子（字符串）
-- 2–3 句，一个**具体的工作场景**：某类客户 / 某个项目阶段 / 某个人遇到了什么，这个概念如何出现、怎么处理。
-- 要有画面感（行业、人物角色、数字、动作），例如：「某银行的智能问答 Demo 用整理好的 50 条 FAQ 演示效果很好；一接真实客服工单，数据格式乱、权限申请卡了三周、坐席也不愿用——项目停在了 L1→L2 的死亡谷。」
-- 例子中的规则、数字必须与课程原文一致；不要写「课程中」「原文」。
+另有 `example` 字段：2–3 句具体工作场景，收在「展开详细说明」里。
 
-### 2. `visual`：图解（对象）
-从下面 6 种类型中选**最贴切的一种**，把概念的结构画出来。文字要短：`t` ≤ 10 个字，`d` ≤ 20 个字。条目数 2–6 个。
+用户反馈：卡片字太多、看着费劲。要改成「一眼看懂」的图标图解。例如「下发策略」= 三个图标块：白名单图标「白名单 / 只放行名单内」、黑名单图标「黑名单 / 拦截名单内」、默认图标「默认 / 新应用初始状态」。
 
-| type | 适用 | 结构 |
-|---|---|---|
-| `flow` | 有先后顺序的步骤 / 阶段 | `{"type":"flow","items":[{"t":"P 原型","d":"1–2 周 · 让客户挑错"}, ...]}` |
-| `cycle` | 循环往复的环节（最后回到第一步） | `{"type":"cycle","items":[{"t":"感知","d":"..."}, ...]}` |
-| `stack` | 分层结构（从上到下叠放） | `{"type":"stack","items":[{"t":"数据层","d":"管进出"}, ...]}` |
-| `levels` | 逐级递进的等级 / 成熟度 | `{"type":"levels","items":[{"t":"L0","d":"场景识别"}, ...],"mark":{"between":[1,2],"label":"死亡谷"}}`（`mark` 可选，标在第 between[0] 与 between[1] 项之间，下标从 0 开始） |
-| `compare` | 两个概念的对比 | `{"type":"compare","left":{"t":"Echo","items":["判断该做什么","…"]},"right":{"t":"Delta","items":["把它做出来","…"]}}`（每边 2–4 条） |
-| `grid` | 并列的清单（几个要素、几条规则） | `{"type":"grid","items":[{"t":"Skill","d":"怎么做"}, ...]}` |
+## 只改 visual 字段，其他字段（plain、points、example 等）一律不动
 
-可选字段 `"note"`：一句 ≤ 30 字的图下说明（如「顺序不能跳」「黑名单命中直接拒绝」）。
+### 每个条目
+`{"i": "图标名", "t": "标题", "d": "一句说明"}`
+- `i`：必须是下面图标库里的名字，选**最能表意**的（白名单→listcheck，黑名单→listx，禁止→ban，人工审批→hand 或 signature，日志→scroll，时间/周期→timer 或 calendar，钱→money，AI→sparkle，Agent→bot，工具→wrench，接口→api，数据→database，用户→user/users，客户→building，评测→flask，指标→chart，权限→key/lock……）。同一张图里各条目图标尽量不重复。
+- `t`：**≤ 6 个字**（英文缩写按 1 字算 2 个字母），名词或短语。
+- `d`：**≤ 12 个字**，只说最关键的一点；能用数字就用数字（如「1–2 周」「≥80%」）。不要写完整句子，不要标点堆叠。
+- 条目数 2–5 个（宁少勿多，只画核心结构）。
 
-要求：
-- 图解的内容（顺序、数字、名称）必须与课程原文一致，不能编造。
-- 每个术语都要有 `visual`；实在不是结构化概念的，用 `grid` 列出它的 2–4 个关键要素。
+### 类型（保持原来选的 type，除非明显不合适）
+- `flow` 先后步骤；`cycle` 循环；`stack` 分层（从上到下）；`levels` 逐级递进（可选 `mark: {"between":[i,j],"label":"≤4字"}`）；`grid` 并列要素。
+- `compare`：`{"type":"compare","left":{"i":"图标","t":"≤6字","items":["≤10字", ...]},"right":{...}}`，每边 2–3 条，左右条目**一一对应**（第 1 条对第 1 条），方便对照。
+- `note` 可选，≤ 16 个字，一句最关键的提醒（如「顺序不能跳」）。没有必要就不写。
+
+### 准确性
+内容（顺序、数字、名称）必须与课程原文一致；压缩字数时不能改变意思。
+
+## 图标库（只能用这些名字）
+user, users, loop, shield, shieldcheck, key, lock, door, flag, layers, trenddown, trendup, target, checklist, alert, search, funnel, steps, compass, bulb, plug, database, cloud, bot, code, palette, puzzle, coins, clock, calendar, book, file, chat, scale, valley, stop, sprout, megaphone, tools, toggle, list, server, rocket, cap, grid, gem, eye, zoom, swap, upload, music, listcheck, listx, ban, check, xcircle, gear, bell, mail, chart, money, hand, handshake, link, timer, trash, pen, send, inbox, archive, folder, tag, star, building, globe, cpu, terminal, api, workflow, sparkle, brain, ruler, flask, bug, wrench, refresh, play, pause, hourglass, thumbup, signature, badge, trophy, route, eyeoff, fingerprint, idcard, scroll, package, branch, home, phone, monitor, upgrade, minus, plus, question, split, merge, seed, megaphone2, glasses, mask, key2
+

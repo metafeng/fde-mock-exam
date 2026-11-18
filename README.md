@@ -108,19 +108,21 @@
 
 ![知识点速览](docs/images/app-overview.png)
 
-**术语卡片**——每个术语配一个表意图标，颜色区分所属模块；先看术语自己想一想，再翻面看答案。背面从上到下是：一句大白话 → **图解**（把概念的结构画出来）→ **举个例子**（一个真实工作场景）→ 编号要点（清单和数字与课程原文一致）→ 类比和易混点并排 → 口诀 → 出处。选「不认识」的卡片会隔几张再出现，直到认识为止；底部「练相关题」可以直接做用到这个术语的题目。
+**术语卡片**——每个术语配一个表意图标，颜色区分所属模块；先看术语自己想一想，再翻面看答案。背面只放三样东西：**一句话解释 + 一张图标图解 + 口诀**，一眼看懂；例子、要点、类比、易混点收在「展开详细说明」里，需要时再点开。选「不认识」的卡片会隔几张再出现，直到认识为止；底部「练相关题」可以直接做用到这个术语的题目。
 
-图解按概念的类型自动选样式，共 6 种：
+图解把概念拆成几个「图标 + 短标题 + 一句话」，按概念的结构自动选 6 种画法：
 
-| 流程（PEV 交付闭环） | 对比（Echo / Delta） |
+| 分层（下发策略：黑名单 / 白名单 / 默认） | 流程（PEV 交付闭环） |
 |---|---|
-| ![流程图解](docs/images/card-flow.png) | ![对比图解](docs/images/card-compare.png) |
+| ![分层图解](docs/images/card-stack.png) | ![流程图解](docs/images/card-flow.png) |
 | **循环（Agent Loop 四环节）** | **台阶（死亡谷）** |
 | ![循环图解](docs/images/card-cycle.png) | ![台阶图解](docs/images/card-levels.png) |
-| **分层（约束三层模型）** | **手机上的卡片** |
-| ![分层图解](docs/images/card-stack.png) | ![手机端卡片](docs/images/card-mobile.png) |
+| **对比（Echo / Delta）** | **宫格（三个端）** |
+| ![对比图解](docs/images/card-compare.png) | ![宫格图解](docs/images/card-grid.png) |
 
-另外还有「宫格」，用来并列展示几个要素或几条规则（如三个端：客户端 / 企业管理后台 / WMA）。
+手机上流程和宫格会自动改成竖排：
+
+<img src="docs/images/card-mobile.png" alt="手机端卡片" width="320">
 
 **术语卡片 · 列表速览**——一页看完一个模块的全部术语和口诀，适合考前快速过一遍；点开每一条可以看详情、标记掌握。
 
@@ -267,7 +269,7 @@ docs/glossary-style.md  术语卡片编写规范
 
 - 源文件在 `data/glossary/g0.json` ~ `g9.json`，按 10 个模块分文件，共 139 个术语；`scripts/build.py` 合并生成 `js/glossary.js`。
 - 每个术语的字段：`term` 术语名、`icon` 图标（`js/icons.js` 中的图标名）、`aliases` 别名、`plain` 大白话、`analogy` 类比、`points` 关键要点、`confuse` 易混点、`mnemonic` 口诀、`src` 出处、`example` 举个例子、`visual` 图解。完整规范见 [`docs/glossary-style.md`](docs/glossary-style.md)。
-- **图解 `visual`** 有 6 种 `type`：`flow` 流程、`cycle` 循环、`stack` 分层、`levels` 台阶（可用 `mark` 在两级之间标注，如死亡谷）、`compare` 左右对比、`grid` 宫格；每项是 `{"t": 标题, "d": 说明}`，可加一句 `note` 图下说明。页面按类型自动绘制，颜色跟随模块。完整规范见 [`docs/glossary-style.md`](docs/glossary-style.md)。
+- **图解 `visual`** 有 6 种 `type`：`flow` 流程、`cycle` 循环、`stack` 分层、`levels` 台阶（可用 `mark` 在两级之间标注，如死亡谷）、`compare` 左右对比、`grid` 宫格；每项是 `{"i": 图标名, "t": 标题（≤6 字）, "d": 说明（≤12 字）}`，可加一句 `note` 提醒。页面按类型自动绘制，颜色跟随模块。完整规范见 [`docs/glossary-style.md`](docs/glossary-style.md)。
 - **学习顺序**：标过「不认识」的最先出现，其次是没看过的；同一组内按「官方占比高、在题库里出现次数多、模块内排序靠前」优先。
 - **认识 / 不认识**：选「认识了」移出待学（「只看没掌握」模式）；选「不认识」的卡片隔 4 张再出现。掌握情况记在 `fde-mock-cards`，线上按账号同步。
 - **练相关题**：页面自动在题库的题干、考点和讲解里查找术语名和别名，找出用到这个术语的题（每个术语都至少能匹配到几道），随机抽最多 15 道用练习模式作答。

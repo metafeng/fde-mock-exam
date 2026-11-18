@@ -69,27 +69,48 @@
     }));
   }
 
-  // ---- 图解：把概念结构画出来 ----
+  // ---- 图解：图标 + 短标题 + 一句话 ----
+  let moreOpen = false; // 「展开详细说明」在卡片之间保持同一状态
   function visualHtml(v, g) {
     if (!v || !v.type) return "";
     const c = (window.MODULE_COLORS || [])[g.m] || ["#3b8bff", "#0a5ce6"];
-    const it = (x, i) => `<div class="vz-item"><span class="vz-n" style="background:${c[1]}">${i + 1}</span><b>${esc(x.t)}</b>${x.d ? `<span>${esc(x.d)}</span>` : ""}</div>`;
+    const grad = `background:linear-gradient(145deg,${c[0]},${c[1]})`;
+    const icb = (name, cls) => `<span class="${cls || "vn-ic"}" style="${grad}">${window.iconSvg(name || g.icon || "bulb")}</span>`;
+    const node = (x) => `<div class="vn">${icb(x.i)}<b>${esc(x.t)}</b>${x.d ? `<span>${esc(x.d)}</span>` : ""}</div>`;
+    const arrow = `<svg class="vz-arr" viewBox="0 0 24 12" aria-hidden="true"><path d="M1 6h20M16 1.5L21.5 6 16 10.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
     const items = v.items || [];
     let body = "";
-    if (v.type === "flow") body = `<div class="vz-flow">${items.map((x, i) => (i ? `<span class="vz-arrow" aria-hidden="true">→</span>` : "") + it(x, i)).join("")}</div>`;
-    else if (v.type === "cycle") body = `<div class="vz-flow vz-cycle">${items.map((x, i) => (i ? `<span class="vz-arrow" aria-hidden="true">→</span>` : "") + it(x, i)).join("")}<span class="vz-back" aria-hidden="true">↺ 回到「${esc(items[0] ? items[0].t : "")}」</span></div>`;
-    else if (v.type === "stack") body = `<div class="vz-stack">${items.map((x, i) => `<div class="vz-layer" style="--w:${100 - i * (36 / Math.max(items.length, 1))}%;background:linear-gradient(90deg,${c[0]}22,${c[1]}14)"><b>${esc(x.t)}</b>${x.d ? `<span>${esc(x.d)}</span>` : ""}</div>`).join("")}</div>`;
-    else if (v.type === "levels") {
+    if (v.type === "flow") {
+      body = `<div class="vz2-flow n${items.length}">${items.map((x, i) => (i ? arrow : "") + node(x)).join("")}</div>`;
+    } else if (v.type === "cycle") {
+      const n = items.length, S = 340, R = 112, cx = S / 2;
+      const pos = items.map((_, i) => { const a = -Math.PI / 2 + (i * 2 * Math.PI) / n; return [cx + R * Math.cos(a), cx + R * Math.sin(a)]; });
+      // 环上每两个节点之间画一个箭头（沿切线方向）
+      const tips = items.map((_, i) => { const a = -Math.PI / 2 + ((i + 0.5) * 2 * Math.PI) / n; const x = cx + R * Math.cos(a), y = cx + R * Math.sin(a); const deg = (a * 180) / Math.PI + 90; return `<path d="M-5 -4L1 0L-5 4" transform="translate(${x.toFixed(1)} ${y.toFixed(1)}) rotate(${deg.toFixed(1)})" fill="none" stroke="${c[1]}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>`; }).join("");
+      body = `<div class="vz2-cycle" style="--s:${S}px">
+        <svg class="vz-ring" viewBox="0 0 ${S} ${S}" aria-hidden="true"><circle cx="${cx}" cy="${cx}" r="${R}" fill="none" stroke="${c[0]}" stroke-opacity=".35" stroke-width="2" stroke-dasharray="4 5"/>${tips}</svg>
+        ${items.map((x, i) => `<div class="vn vn-abs" style="left:${(pos[i][0] / S * 100).toFixed(2)}%;top:${(pos[i][1] / S * 100).toFixed(2)}%">${icb(x.i)}<b>${esc(x.t)}</b>${x.d ? `<span>${esc(x.d)}</span>` : ""}</div>`).join("")}
+      </div>`;
+    } else if (v.type === "stack") {
+      body = `<div class="vz2-stack">${items.map((x, i) => `<div class="vz2-layer" style="--w:${100 - i * (24 / Math.max(items.length - 1, 1))}%">${icb(x.i, "vn-ic sm")}<b>${esc(x.t)}</b><span>${esc(x.d || "")}</span></div>`).join("")}</div>`;
+    } else if (v.type === "levels") {
       const m = v.mark && v.mark.between;
-      body = `<div class="vz-levels">${items.map((x, i) => {
-        const gap = m && i === m[1] ? `<div class="vz-gap"><span>${esc(v.mark.label || "")}</span></div>` : "";
-        return gap + `<div class="vz-lv" style="--h:${30 + i * (60 / Math.max(items.length - 1, 1))}%"><div class="vz-bar" style="background:linear-gradient(180deg,${c[0]},${c[1]})"></div><b>${esc(x.t)}</b>${x.d ? `<span>${esc(x.d)}</span>` : ""}</div>`;
+      body = `<div class="vz2-levels">${items.map((x, i) => {
+        const gap = m && i === m[1] ? `<div class="vz2-cliff"><span>${esc(v.mark.label || "")}</span></div>` : "";
+        return gap + `<div class="vz2-lv">${icb(x.i, "vn-ic sm")}<b>${esc(x.t)}</b>${x.d ? `<span>${esc(x.d)}</span>` : ""}<div class="vz2-bar" style="height:${18 + i * (70 / Math.max(items.length - 1, 1))}px;background:linear-gradient(180deg,${c[0]},${c[1]})"></div></div>`;
       }).join("")}</div>`;
     } else if (v.type === "compare") {
-      const side = (s2, cls) => `<div class="vz-side ${cls}"><b>${esc(s2.t)}</b><ul>${(s2.items || []).map((x) => `<li>${esc(x)}</li>`).join("")}</ul></div>`;
-      body = `<div class="vz-compare">${side(v.left || {}, "l")}<span class="vz-vs">VS</span>${side(v.right || {}, "r")}</div>`;
-    } else if (v.type === "grid") body = `<div class="vz-grid n${Math.min(items.length, 4)}">${items.map(it).join("")}</div>`;
-    return `<figure class="vz"><figcaption>${ic("grid")}图解</figcaption>${body}${v.note ? `<p class="vz-note">${esc(v.note)}</p>` : ""}</figure>`;
+      const L = v.left || {}, Rt = v.right || {}, rows = Math.max((L.items || []).length, (Rt.items || []).length);
+      let r = "";
+      for (let i = 0; i < rows; i++) r += `<div class="cmp-l">${esc((L.items || [])[i] || "")}</div><div class="cmp-mid"></div><div class="cmp-r">${esc((Rt.items || [])[i] || "")}</div>`;
+      body = `<div class="vz2-cmp">
+        <div class="cmp-h l">${window.iconSvg(L.i || "check", "ic")}<b>${esc(L.t || "")}</b></div><div class="cmp-vs">VS</div><div class="cmp-h r">${window.iconSvg(Rt.i || "xcircle", "ic")}<b>${esc(Rt.t || "")}</b></div>
+        ${r}
+      </div>`;
+    } else {
+      body = `<div class="vz2-grid n${Math.min(items.length, 5)}">${items.map(node).join("")}</div>`;
+    }
+    return `<figure class="vz2">${body}${v.note ? `<p class="vz2-note">${window.iconSvg("alert", "ic")}${esc(v.note)}</p>` : ""}</figure>`;
   }
 
   // 要点：「标题：内容」把标题加粗
@@ -97,18 +118,20 @@
 
   function backHtml(g) {
     const rel = related(g);
+    const more = [
+      g.example ? `<div class="cm-sec"><span class="cb-tag t-ex">${ic("chat")}举个例子</span><p>${esc(g.example)}</p></div>` : "",
+      (g.points || []).length ? `<div class="cm-sec"><span class="cb-tag t-pt">${ic("list")}要点</span><ol class="cb-points">${g.points.map((p) => `<li>${pointHtml(p)}</li>`).join("")}</ol></div>` : "",
+      g.analogy ? `<div class="cm-sec"><span class="cb-tag t-ana">${ic("bulb")}类比</span><p>${esc(g.analogy)}</p></div>` : "",
+      g.confuse ? `<div class="cm-sec"><span class="cb-tag t-conf">${ic("alert")}易混</span><p>${esc(g.confuse)}</p></div>` : "",
+    ].join("");
     return `
       <p class="cb-plain">${esc(g.plain)}</p>
       ${visualHtml(g.visual, g)}
-      ${g.example ? `<div class="cb-example"><span class="cb-tag t-ex">${ic("chat")}举个例子</span><p>${esc(g.example)}</p></div>` : ""}
-      <div class="cb-sec"><span class="cb-tag t-pt">${ic("list")}要点</span><ol class="cb-points">${(g.points || []).map((p) => `<li>${pointHtml(p)}</li>`).join("")}</ol></div>
-      ${g.analogy || g.confuse ? `<div class="cb-duo">
-        ${g.analogy ? `<div class="cb-note n-ana"><span class="cb-tag t-ana">${ic("bulb")}类比</span><p>${esc(g.analogy)}</p></div>` : ""}
-        ${g.confuse ? `<div class="cb-note n-conf"><span class="cb-tag t-conf">${ic("alert")}易混</span><p>${esc(g.confuse)}</p></div>` : ""}
-      </div>` : ""}
       ${g.mnemonic ? `<div class="cb-mn">${ic("music")}<span>口诀</span><b>${esc(g.mnemonic)}</b></div>` : ""}
+      <details class="cb-more"${moreOpen ? " open" : ""}><summary>展开详细说明<em>例子 · 要点 · 类比 · 易混</em></summary><div class="cm-body">${more}</div></details>
       <p class="cb-foot"><span class="cb-src">${ic("book")}出处：${esc(g.src)}</span>${rel.length ? `<button type="button" class="link cb-rel" data-id="${g.id}">练相关题（${rel.length}）→</button>` : ""}</p>`;
   }
+  document.addEventListener("toggle", (e) => { if (e.target.classList && e.target.classList.contains("cb-more")) moreOpen = e.target.open; }, true);
 
   function practiceRelated(id) {
     const g = G.find((x) => x.id === id); if (!g) return;
