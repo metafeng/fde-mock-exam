@@ -1083,3 +1083,10 @@ button.cp-card:hover{box-shadow:0 0 0 1.5px var(--accent);color:var(--accent)}
 }
 .qc-more[open] > summary{top:var(--hdr,58px)}
 @media (max-width:820px){.qc-more[open] > summary{top:var(--hdr,94px)}}
+/* 触屏设备没有真正的悬停：手指最后点过的位置会被当成 hover，换题后会误把某个选项描成蓝框，这里取消 */
+@media (hover:none){
+  .opt:hover:not(.sel):not(.is-right):not(.is-wrong){border-color:var(--line)}
+  .opt:hover:not(.sel):not(.is-right):not(.is-wrong) .key{border-color:#c5c8ce;color:var(--ink-2)}
+}
+html.touch .opt:hover:not(.sel):not(.is-right):not(.is-wrong){border-color:var(--line)}
+html.touch .opt:hover:not(.sel):not(.is-right):not(.is-wrong) .key{border-color:#c5c8ce;color:var(--ink-2)}

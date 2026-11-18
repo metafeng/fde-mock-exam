@@ -245,7 +245,9 @@ function afterJudge(n) {
 
 function go(n) {
   if (n < 0 || n >= S.ids.length) return;
-  S.cur = n; save(); renderQ(); renderGrid();
+  S.cur = n; save();
+  if (document.activeElement && document.activeElement !== document.body) document.activeElement.blur(); // 换题时清掉上一题的焦点
+  renderQ(); renderGrid();
   if (innerWidth <= 820) scrollToEl($("#qcard"));
 }
 
@@ -449,3 +451,6 @@ if (prev && prev.ids && prev.ids.every((i) => BANK[i])) {
 renderDist();
 renderHome();
 if (innerWidth > 820) $("#sheet").classList.remove("collapsed");
+
+// 触屏标记：手指一碰屏幕就给页面加 touch 类，取消选项的悬停描边（手机上「悬停」会停留在最后点过的位置）
+document.addEventListener("touchstart", () => document.documentElement.classList.add("touch"), { once: true, passive: true });
