@@ -74,14 +74,16 @@
   function visualHtml(v, g) {
     if (!v || !v.type) return "";
     const c = (window.MODULE_COLORS || [])[g.m] || ["#3b8bff", "#0a5ce6"];
-    const grad = `background:linear-gradient(145deg,${c[0]},${c[1]})`;
-    const icb = (name, cls) => `<span class="${cls || "vn-ic"}" style="${grad}">${window.iconSvg(name || g.icon || "bulb")}</span>`;
-    const node = (x) => `<div class="vn">${icb(x.i)}<b>${esc(x.t)}</b>${x.d ? `<span>${esc(x.d)}</span>` : ""}</div>`;
+    const TONE = { bad: ["#ff7b7b", "#e03131"], good: ["#43d17f", "#1f9d55"], warn: ["#ffbf4d", "#e8890c"] };
+    const toneOf = (n) => /^(listx|ban|xcircle|stop|trash|bug|eyeoff|minus)$/.test(n) ? "bad" : /^(listcheck|check|shieldcheck|thumbup|trophy|badge|plus)$/.test(n) ? "good" : /^(alert|hourglass)$/.test(n) ? "warn" : "";
+    const gradOf = (n) => { const t = TONE[toneOf(n)] || c; return `background:linear-gradient(145deg,${t[0]},${t[1]})`; };
+    const icb = (name, cls, num) => `<span class="${cls || "vn-ic"}" style="${gradOf(name || g.icon)}">${window.iconSvg(name || g.icon || "bulb")}${num ? `<i class="vn-num">${num}</i>` : ""}</span>`;
+    const node = (x, i, num) => `<div class="vn">${icb(x.i, "", num ? i + 1 : 0)}<b>${esc(x.t)}</b>${x.d ? `<span>${esc(x.d)}</span>` : ""}</div>`;
     const arrow = `<svg class="vz-arr" viewBox="0 0 24 12" aria-hidden="true"><path d="M1 6h20M16 1.5L21.5 6 16 10.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
     const items = v.items || [];
     let body = "";
     if (v.type === "flow") {
-      body = `<div class="vz2-flow n${items.length}">${items.map((x, i) => (i ? arrow : "") + node(x)).join("")}</div>`;
+      body = `<div class="vz2-flow n${items.length}">${items.map((x, i) => (i ? arrow : "") + node(x, i, true)).join("")}</div>`;
     } else if (v.type === "cycle") {
       const n = items.length, S = 340, R = 112, cx = S / 2;
       const pos = items.map((_, i) => { const a = -Math.PI / 2 + (i * 2 * Math.PI) / n; return [cx + R * Math.cos(a), cx + R * Math.sin(a)]; });
@@ -89,7 +91,7 @@
       const tips = items.map((_, i) => { const a = -Math.PI / 2 + ((i + 0.5) * 2 * Math.PI) / n; const x = cx + R * Math.cos(a), y = cx + R * Math.sin(a); const deg = (a * 180) / Math.PI + 90; return `<path d="M-5 -4L1 0L-5 4" transform="translate(${x.toFixed(1)} ${y.toFixed(1)}) rotate(${deg.toFixed(1)})" fill="none" stroke="${c[1]}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>`; }).join("");
       body = `<div class="vz2-cycle" style="--s:${S}px">
         <svg class="vz-ring" viewBox="0 0 ${S} ${S}" aria-hidden="true"><circle cx="${cx}" cy="${cx}" r="${R}" fill="none" stroke="${c[0]}" stroke-opacity=".35" stroke-width="2" stroke-dasharray="4 5"/>${tips}</svg>
-        ${items.map((x, i) => `<div class="vn vn-abs" style="left:${(pos[i][0] / S * 100).toFixed(2)}%;top:${(pos[i][1] / S * 100).toFixed(2)}%">${icb(x.i)}<b>${esc(x.t)}</b>${x.d ? `<span>${esc(x.d)}</span>` : ""}</div>`).join("")}
+        ${items.map((x, i) => `<div class="vn vn-abs" style="left:${(pos[i][0] / S * 100).toFixed(2)}%;top:${(pos[i][1] / S * 100).toFixed(2)}%">${icb(x.i, "", i + 1)}<b>${esc(x.t)}</b>${x.d ? `<span>${esc(x.d)}</span>` : ""}</div>`).join("")}
       </div>`;
     } else if (v.type === "stack") {
       body = `<div class="vz2-stack">${items.map((x, i) => `<div class="vz2-layer" style="--w:${100 - i * (24 / Math.max(items.length - 1, 1))}%">${icb(x.i, "vn-ic sm")}<b>${esc(x.t)}</b><span>${esc(x.d || "")}</span></div>`).join("")}</div>`;
@@ -101,16 +103,19 @@
       }).join("")}</div>`;
     } else if (v.type === "compare") {
       const L = v.left || {}, Rt = v.right || {}, rows = Math.max((L.items || []).length, (Rt.items || []).length);
+      const tl = toneOf(L.i || ""), tr = toneOf(Rt.i || "");
+      const fix = tl === "bad" && tr === "good"; // 左错右对：中间用箭头表示「改成」
+      const mark = (t) => t === "bad" ? `<em class="mk bad">✕</em>` : t === "good" ? `<em class="mk good">✓</em>` : "";
       let r = "";
-      for (let i = 0; i < rows; i++) r += `<div class="cmp-l">${esc((L.items || [])[i] || "")}</div><div class="cmp-mid"></div><div class="cmp-r">${esc((Rt.items || [])[i] || "")}</div>`;
+      for (let i = 0; i < rows; i++) r += `<div class="cmp-c l ${tl}">${mark(tl)}<span>${esc((L.items || [])[i] || "")}</span></div><div class="cmp-mid ${fix ? "fix" : ""}">${fix ? arrow : ""}</div><div class="cmp-c r ${tr}">${mark(tr)}<span>${esc((Rt.items || [])[i] || "")}</span></div>`;
       body = `<div class="vz2-cmp">
-        <div class="cmp-h l">${window.iconSvg(L.i || "check", "ic")}<b>${esc(L.t || "")}</b></div><div class="cmp-vs">VS</div><div class="cmp-h r">${window.iconSvg(Rt.i || "xcircle", "ic")}<b>${esc(Rt.t || "")}</b></div>
+        <div class="cmp-h l ${tl}">${window.iconSvg(L.i || "check", "ic")}<b>${esc(L.t || "")}</b></div><div class="cmp-vs">${fix ? "" : "VS"}</div><div class="cmp-h r ${tr}">${window.iconSvg(Rt.i || "xcircle", "ic")}<b>${esc(Rt.t || "")}</b></div>
         ${r}
       </div>`;
     } else {
-      body = `<div class="vz2-grid n${Math.min(items.length, 5)}">${items.map(node).join("")}</div>`;
+      body = `<div class="vz2-grid n${Math.min(items.length, 5)}">${items.map((x, i) => node(x, i)).join("")}</div>`;
     }
-    return `<figure class="vz2">${body}${v.note ? `<p class="vz2-note">${window.iconSvg("alert", "ic")}${esc(v.note)}</p>` : ""}</figure>`;
+    return `<figure class="vz2">${body}${v.note ? `<p class="vz2-note"><span>${window.iconSvg("alert", "ic")}${esc(v.note)}</span></p>` : ""}</figure>`;
   }
 
   // 要点：「标题：内容」把标题加粗
@@ -119,16 +124,16 @@
   function backHtml(g) {
     const rel = related(g);
     const more = [
-      g.example ? `<div class="cm-sec"><span class="cb-tag t-ex">${ic("chat")}举个例子</span><p>${esc(g.example)}</p></div>` : "",
       (g.points || []).length ? `<div class="cm-sec"><span class="cb-tag t-pt">${ic("list")}要点</span><ol class="cb-points">${g.points.map((p) => `<li>${pointHtml(p)}</li>`).join("")}</ol></div>` : "",
+      g.example ? `<div class="cm-sec"><span class="cb-tag t-ex">${ic("chat")}举个例子</span><p>${esc(g.example)}</p></div>` : "",
       g.analogy ? `<div class="cm-sec"><span class="cb-tag t-ana">${ic("bulb")}类比</span><p>${esc(g.analogy)}</p></div>` : "",
       g.confuse ? `<div class="cm-sec"><span class="cb-tag t-conf">${ic("alert")}易混</span><p>${esc(g.confuse)}</p></div>` : "",
     ].join("");
     return `
       <p class="cb-plain">${esc(g.plain)}</p>
       ${visualHtml(g.visual, g)}
-      ${g.mnemonic ? `<div class="cb-mn">${ic("music")}<span>口诀</span><b>${esc(g.mnemonic)}</b></div>` : ""}
-      <details class="cb-more"${moreOpen ? " open" : ""}><summary>展开详细说明<em>例子 · 要点 · 类比 · 易混</em></summary><div class="cm-body">${more}</div></details>
+      ${g.mnemonic ? `<p class="cb-mn"><span>口诀</span>${esc(g.mnemonic)}</p>` : ""}
+      <details class="cb-more"${moreOpen ? " open" : ""}><summary>详细说明<em>要点 · 例子 · 类比 · 易混</em></summary><div class="cm-body">${more}</div></details>
       <p class="cb-foot"><span class="cb-src">${ic("book")}出处：${esc(g.src)}</span>${rel.length ? `<button type="button" class="link cb-rel" data-id="${g.id}">练相关题（${rel.length}）→</button>` : ""}</p>`;
   }
   document.addEventListener("toggle", (e) => { if (e.target.classList && e.target.classList.contains("cb-more")) moreOpen = e.target.open; }, true);
