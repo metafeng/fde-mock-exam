@@ -8,7 +8,14 @@ cd "$(dirname "$0")/.."
 : "${DEPLOY_SERVER:?请在 scripts/deploy.env 中设置 DEPLOY_SERVER，例如 root@1.2.3.4}"
 : "${DEPLOY_DEST:?请在 scripts/deploy.env 中设置 DEPLOY_DEST，例如 /var/www/example.com}"
 
+# 可选：本机开了代理软件导致 22 端口连不上时，在 deploy.env 里设置 DEPLOY_SOCKS=127.0.0.1:端口，经 SOCKS 代理连接
+SSH_CMD=(ssh); RSH="ssh"
+if [ -n "${DEPLOY_SOCKS:-}" ]; then
+  SSH_CMD=(ssh -o "ProxyCommand=nc -X 5 -x $DEPLOY_SOCKS %h %p")
+  RSH="ssh -o 'ProxyCommand=nc -X 5 -x $DEPLOY_SOCKS %h %p'"
+fi
+
 python3 scripts/build.py            # 先用 data/ 重新生成题库并校验
-rsync -az --delete --exclude ".DS_Store" index.html css js assets "$DEPLOY_SERVER:$DEPLOY_DEST/"
-ssh "$DEPLOY_SERVER" "chown -R www-data:www-data $DEPLOY_DEST"
+rsync -az --delete --exclude ".DS_Store" -e "$RSH" index.html css js assets "$DEPLOY_SERVER:$DEPLOY_DEST/"
+"${SSH_CMD[@]}" "$DEPLOY_SERVER" "chown -R www-data:www-data $DEPLOY_DEST"
 echo "已发布：${SITE_URL:-$DEPLOY_DEST}"
