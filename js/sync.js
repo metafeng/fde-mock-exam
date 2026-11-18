@@ -9,7 +9,7 @@
   const META_KEY = "fde-sync-meta"; // 每个 key 的本地修改时间
   const REV_KEY = "fde-sync-rev";   // 本地已同步到的服务器版本号
   const OWNER_KEY = "fde-sync-user"; // 本地缓存属于哪个账号
-  const APP_SCRIPTS = ["js/questions.js", "js/glossary.js", "js/sources.js", "js/icons.js", "js/app.js", "js/topic.js", "js/cards.js", "js/account.js"];
+  const APP_SCRIPTS = ["js/questions.js", "js/glossary.js", "js/sources.js", "js/frameworks.js", "js/icons.js", "js/app.js", "js/topic.js", "js/cards.js", "js/account.js"];
 
   const ls = window.localStorage;
   const rawSet = Storage.prototype.setItem, rawRemove = Storage.prototype.removeItem;

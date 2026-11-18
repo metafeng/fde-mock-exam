@@ -131,13 +131,40 @@
   // 要点：「标题：内容」把标题加粗
   const pointHtml = (p) => { const m = String(p).match(/^([^：:]{1,16})[：:](.+)$/); return m ? `<b>${esc(m[1])}</b>${hl(m[2])}` : hl(p); };
 
-  // 所处位置：整个框架的阶段条，高亮当前所在一段
+  // 所处位置：整个框架的阶段条，高亮当前所在一段；每一段都能点开，看这一段是什么、有哪些卡片
+  function segInfo(g, i) {
+    const path = g.where.path, key = path.join("|");
+    const fw = (window.FRAMEWORKS || {})[key], seg = fw && fw[i] ? fw[i] : { d: "", terms: [] };
+    const names = (seg.terms || []).slice();
+    // 同一框架里标在这一段的卡片也算进去
+    G.forEach((x) => { if (x.where && x.where.path.join("|") === key && x.where.at === i && !names.includes(x.term)) names.push(x.term); });
+    const cards = names.map((n) => G.find((x) => x.term === n && x.m === g.m) || G.find((x) => x.term === n)).filter(Boolean);
+    return { d: seg.d || "", cards };
+  }
   function whereHtml(g) {
     const w = g.where; if (!w || !(w.path || []).length) return "";
     const c = (window.MODULE_COLORS || [])[g.m] || ["#3b8bff", "#0a5ce6"];
-    return `<div class="cb-where"><span class="cw-h">${ic("compass")}所处位置</span><ol class="cw-path">${w.path.map((p, i) =>
-      `<li class="${i === w.at ? "on" : i < w.at ? "past" : ""}"${i === w.at ? ` style="background:linear-gradient(145deg,${c[0]},${c[1]})"` : ""}><span>${esc(p)}</span>${i === w.at && w.label ? `<em>${esc(w.label)}</em>` : ""}</li>`).join("")}</ol></div>`;
+    return `<div class="cb-where" data-id="${g.id}"><span class="cw-h">${ic("compass")}所处位置</span><ol class="cw-path">${w.path.map((p, i) => {
+      const n = segInfo(g, i).cards.length;
+      return `<li class="${i === w.at ? "on" : i < w.at ? "past" : ""}"${i === w.at ? ` style="background:linear-gradient(145deg,${c[0]},${c[1]})"` : ""}><button type="button" class="cw-seg" data-seg="${i}" aria-expanded="false"><span>${esc(p)}</span>${i === w.at && w.label ? `<em>${esc(w.label)}</em>` : ""}${n ? `<i class="cw-n">${n} 张卡片</i>` : ""}</button></li>`;
+    }).join("")}</ol></div><div class="cw-pop" hidden></div>`;
   }
+  // 点开某一段：显示说明和卡片
+  document.addEventListener("click", (e) => {
+    const btn = e.target.closest(".cw-seg"); if (!btn) return;
+    e.stopPropagation();
+    const box = btn.closest(".cb-where"), pop = box.nextElementSibling, g = G.find((x) => x.id === box.dataset.id); if (!g) return;
+    const i = +btn.dataset.seg, open = btn.getAttribute("aria-expanded") === "true";
+    box.querySelectorAll(".cw-seg").forEach((b) => { b.setAttribute("aria-expanded", "false"); b.parentNode.classList.remove("sel"); });
+    if (open) { pop.hidden = true; return; }
+    btn.setAttribute("aria-expanded", "true"); btn.parentNode.classList.add("sel");
+    const { d, cards } = segInfo(g, i);
+    pop.innerHTML = `<b class="cp-t">${esc(g.where.path[i])}</b>${d ? `<p>${hl(d)}</p>` : ""}${cards.length ? `<div class="cp-cards">${cards.map((x) => x.id === g.id
+      ? `<span class="cp-card cur">${tile(x, "sm")}${esc(x.term)}<small>当前</small></span>`
+      : `<button type="button" class="cp-card" data-open="${x.id}">${tile(x, "sm")}${esc(x.term)}</button>`).join("")}</div>` : `<p class="cp-none">这一段暂时没有单独的术语卡片。</p>`}`;
+    pop.hidden = false;
+    pop.querySelectorAll("[data-open]").forEach((b) => (b.onclick = (ev) => { ev.stopPropagation(); openTerm(b.dataset.open); }));
+  }, true);
 
   // 出处：解析「第 1 章 1.3；第 12 章 Q2、Q3」，每个小节 / 问题链接到飞书原文对应标题
   function srcHtml(src) {
@@ -214,7 +241,7 @@
       <p class="cv-keys">快捷键：空格翻面　← 不认识　→ 认识了</p>`;
     // 正面：点哪里都翻面；背面：只有点标题行才翻回去，点「展开详细说明」、图解、文字都不翻面
     $("#flash").onclick = (e) => {
-      if (e.target.closest(".cb-rel, .cb-more, a, button")) return;
+      if (e.target.closest(".cb-rel, .cb-more, .cb-where, .cw-pop, a, button")) return;
       if (flipped && !e.target.closest(".cb-head")) return;
       if (String(window.getSelection && window.getSelection()) !== "") return; // 正在选中文字时不翻面
       flipped = !flipped; renderCard();
