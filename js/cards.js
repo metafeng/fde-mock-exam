@@ -345,10 +345,10 @@
     const s = st();
     const groups = MODULES.map((md, m) => ({ m, items: queue.filter((g) => g.m === m) })).filter((x) => x.items.length);
     $("#cvBody").innerHTML = groups.length ? groups.map(({ m, items }) => `
-      <section class="cl-group"><h4>${esc(MODULES[m][0])}</h4>
+      <section class="cl-group"><h4>${esc(MODULES[m][0])}<small>${items.filter((g) => s[g.id] && s[g.id].k === 1).length} / ${items.length} 已掌握</small></h4>
         ${items.map((g) => { const k = s[g.id] && s[g.id].k === 1; return `
           <details class="cl-item ${k ? "known" : ""}">
-            <summary><span class="cl-term">${tile(g, "sm")}<span>${esc(g.term)}</span></span><span class="cl-plain">${esc(g.plain)}</span>${g.mnemonic ? `<span class="cl-mn">${esc(g.mnemonic)}</span>` : ""}</summary>
+            <summary>${tile(g, "sm")}<div class="cl-main"><b>${esc(g.term)}${k ? `<i class="cl-ok" title="已掌握">✓</i>` : ""}</b><span>${esc(g.plain)}</span></div>${g.mnemonic ? `<span class="cl-mn" title="${esc(g.mnemonic)}">${esc(g.mnemonic)}</span>` : ""}<span class="cl-chev" aria-hidden="true"></span></summary>
             <div class="cl-body"><div class="cb-meta cl-src">${srcHtml(g.src)}</div>${backHtml(g)}
               <div class="cl-act"><button type="button" class="btn ${k ? "" : "primary"}" data-k="${g.id}">${k ? "标为没掌握" : "标为已掌握"}</button></div>
             </div>

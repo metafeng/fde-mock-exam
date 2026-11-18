@@ -189,6 +189,7 @@
       }
     }).catch(() => {});
   check();
-  setInterval(check, 5 * 60 * 1000);
+  setInterval(check, 60 * 1000);
+  window.addEventListener("focus", check);
   document.addEventListener("visibilitychange", () => { if (!document.hidden) check(); });
 })();
