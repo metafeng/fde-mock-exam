@@ -159,27 +159,16 @@
     if (open) { pop.hidden = true; return; }
     btn.setAttribute("aria-expanded", "true"); btn.parentNode.classList.add("sel");
     const { d, cards } = segInfo(g, i);
-    pop.innerHTML = `<b class="cp-t">${esc(g.where.path[i])}</b>${d ? `<p>${hl(d)}</p>` : ""}${cards.length ? `<div class="cp-cards">${cards.map((x) => x.id === g.id
-      ? `<span class="cp-card cur">${tile(x, "sm")}${esc(x.term)}<small>当前</small></span>`
-      : `<button type="button" class="cp-card" data-peek="${x.id}" aria-expanded="false">${tile(x, "sm")}${esc(x.term)}</button>`).join("")}</div><div class="cp-peek" hidden></div>` : `<p class="cp-none">这一段暂时没有单独的术语卡片。</p>`}`;
+    // 一层展示：每张卡片只给「术语 + 一句话 + 至多 3 个关键参数」，需要时再点「打开」
+    pop.innerHTML = `${d ? `<p class="cp-d"><b>${esc(g.where.path[i])}</b>${hl(d)}</p>` : `<p class="cp-d"><b>${esc(g.where.path[i])}</b></p>`}
+      ${cards.length ? `<ul class="cp-list">${cards.map((x) => `<li class="${x.id === g.id ? "cur" : ""}">
+        ${tile(x, "sm")}
+        <div class="cp-main"><b>${esc(x.term)}</b><span>${esc(x.plain)}</span>
+          ${(x.keys || []).length ? `<em>${x.keys.slice(0, 3).map((k) => `<i>${esc(k.v)}</i>${esc(k.k)}`).join("<s>·</s>")}</em>` : ""}</div>
+        ${x.id === g.id ? `<small>当前</small>` : `<button type="button" class="cp-open" data-open="${x.id}">打开</button>`}
+      </li>`).join("")}</ul>` : `<p class="cp-none">这一段没有单独的术语卡片。</p>`}`;
     pop.hidden = false;
-    // 点卡片名：就地展开这张卡片的核心内容，不跳转
-    pop.querySelectorAll("[data-peek]").forEach((b) => (b.onclick = (ev) => {
-      ev.stopPropagation();
-      const peek = pop.querySelector(".cp-peek"), x = G.find((y) => y.id === b.dataset.peek), was = b.getAttribute("aria-expanded") === "true";
-      pop.querySelectorAll("[data-peek]").forEach((o) => { o.setAttribute("aria-expanded", "false"); o.classList.remove("on"); });
-      if (was || !x) { peek.hidden = true; return; }
-      b.setAttribute("aria-expanded", "true"); b.classList.add("on");
-      peek.innerHTML = `<div class="pk-head">${tile(x, "sm")}<b>${esc(x.term)}</b><span class="cf-mod">${esc(MODULES[x.m][0])}</span></div>
-        <p class="pk-plain">${esc(x.plain)}</p>
-        ${visualHtml(x.visual, x)}
-        ${(x.keys || []).length ? `<div class="cb-keys"><span class="ck-h">${ic("target")}关键参数</span><div class="ck-list">${x.keys.map((k) => `<div class="ck"><b>${esc(k.v)}</b><span>${esc(k.k)}</span></div>`).join("")}</div></div>` : ""}
-        ${x.trap ? `<p class="cb-trap">${ic("alert")}<span class="ct-h">易错</span><span>${hl(x.trap)}</span></p>` : ""}
-        ${x.mnemonic ? `<p class="cb-mn"><span>口诀</span>${esc(x.mnemonic)}</p>` : ""}
-        <div class="pk-foot"><button type="button" class="link" data-open="${x.id}">打开整张卡片 →</button></div>`;
-      peek.hidden = false;
-      peek.querySelector("[data-open]").onclick = (e2) => { e2.stopPropagation(); openTerm(x.id); };
-    }));
+    pop.querySelectorAll("[data-open]").forEach((o) => (o.onclick = (ev) => { ev.stopPropagation(); openTerm(o.dataset.open); }));
   }, true);
 
   // 出处：只显示「小节号 + 小节名」（章名放在悬停提示里，避免和模块标签重复），点击跳到飞书原文对应标题
