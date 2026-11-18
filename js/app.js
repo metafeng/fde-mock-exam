@@ -319,6 +319,16 @@ function renderResult(filter) {
   const total = sN * 1.5 + mN * 2, pct = Math.round((score / total) * 1000) / 10, pass = pct >= 70;
   if (!S.retry && !S.bestSaved && S.setId !== "wrong" && S.setId !== "topic" && S.setId !== "cards") { pushHist(Math.round(pct)); S.bestSaved = true; save(); }
   const wrongIdx = S.ids.map((_, n) => n).filter((n) => !isRight(n));
+  // 离及格线还差几道题：先算分值高的错题（多选 2 分），最少再答对几道能到 70%
+  const need = total * 0.7;
+  let needQ = 0, acc = score;
+  if (!pass) for (const w of wrongIdx.map((n) => (BANK[S.ids[n]].t === "m" ? 2 : 1.5)).sort((a, b) => b - a)) { if (acc >= need - 1e-9) break; acc += w; needQ++; }
+  const pctTxt = (pct % 1 ? pct.toFixed(1) : String(pct)) + "%";
+  const gap = Math.round(Math.abs(pct - 70) * 10) / 10;
+  const gapTxt = pass
+    ? (gap ? `高出及格线 <b class="num">${gap}%</b>` : `刚好达到及格线`)
+    : `差 <b class="num">${gap}%</b> 及格，再答对 <b class="num">${needQ}</b> 道题就能通过`;
+  const scoreTxt = `${score % 1 ? score.toFixed(1) : score} / ${total} 分`;
   const modRows = mod.map((x, m) => {
     if (!x.n) return "";
     const p = Math.round((x.r / x.n) * 100), cls = p >= 80 ? "" : p >= 60 ? "mid" : "low";
@@ -334,9 +344,11 @@ function renderResult(filter) {
   const used = fmt(Date.now() - (S.start || Date.now()));
   $("#resultView").innerHTML = `
     <div class="score-head">
-      <div class="score-big">${score % 1 ? score.toFixed(1) : score}<small> / ${total}</small></div>
-      <div><span class="verdict-pill ${pass ? "pass" : "fail"}">${pass ? "通过" : "未通过"}</span> <span class="mode-tag">${modeLabel}</span>
-        <div class="score-detail">${setName(S.setId)}${S.retry ? " · 错题重练" : ""}。${S.full ? "及格线 70 分" : "按 70% 正确率判定"}。单选 <b class="num">${sR}/${sN}</b>，多选 <b class="num">${mR}/${mN}</b>，错题 <b class="num">${wrongIdx.length}</b> 道${S.ids.some((_, n) => S.ans[n].length && !isRight(n)) ? "（答错的已收入错题集）" : ""}。${S.mastered ? `本次从错题集移出 <b class="num">${S.mastered}</b> 道。` : ""}${S.start ? `用时 <b class="num">${used}</b>。` : ""}</div></div>
+      <div class="score-big ${pass ? "pass" : "fail"}">${pctTxt}<small>${scoreTxt}</small></div>
+      <div class="score-main"><span class="verdict-pill ${pass ? "pass" : "fail"}">${pass ? "通过" : "未通过"}</span> <span class="mode-tag">${modeLabel}</span>
+        <div class="pass-bar ${pass ? "pass" : "fail"}" title="及格线 70%"><i style="width:${Math.min(pct, 100)}%"></i><span class="pb-line"><em>及格 70%</em></span></div>
+        <div class="pass-gap ${pass ? "pass" : "fail"}">${gapTxt}</div>
+        <div class="score-detail">${setName(S.setId)}${S.retry ? " · 错题重练" : ""}。单选 <b class="num">${sR}/${sN}</b>，多选 <b class="num">${mR}/${mN}</b>，错题 <b class="num">${wrongIdx.length}</b> 道${S.ids.some((_, n) => S.ans[n].length && !isRight(n)) ? "（答错的已收入错题集）" : ""}。${S.mastered ? `本次从错题集移出 <b class="num">${S.mastered}</b> 道。` : ""}${S.start ? `用时 <b class="num">${used}</b>。` : ""}</div></div>
     </div>
     <div class="mods"><h3>模块正确率</h3>${modRows}</div>
     <div class="result-actions">
