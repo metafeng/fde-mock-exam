@@ -146,11 +146,14 @@
     const c = (window.MODULE_COLORS || [])[g.m] || ["#3b8bff", "#0a5ce6"];
     return `<div class="cb-where" data-id="${g.id}"><span class="cw-h">${ic("compass")}所处位置</span><ol class="cw-path">${w.path.map((p, i) => {
       const n = segInfo(g, i).cards.length;
-      return `<li class="${i === w.at ? "on" : i < w.at ? "past" : ""}"${i === w.at ? ` style="background:linear-gradient(145deg,${c[0]},${c[1]})"` : ""}><button type="button" class="cw-seg" data-seg="${i}" aria-expanded="false"><span>${esc(p)}</span>${i === w.at && w.label ? `<em>${esc(w.label)}</em>` : ""}${n ? `<i class="cw-n">${n} 张卡片</i>` : ""}</button></li>`;
+      if (i === w.at) return `<li class="on" style="background:linear-gradient(145deg,${c[0]},${c[1]})"><div class="cw-cur"><span>${esc(p)}</span>${w.label ? `<em>${esc(w.label)}</em>` : ""}</div></li>`;
+      return `<li class="${i < w.at ? "past" : ""}"><button type="button" class="cw-seg" data-seg="${i}" aria-expanded="false" title="${n ? `查看这一段的 ${n} 张卡片` : "查看这一段"}"><span>${esc(p)}</span>${n ? `<i class="cw-n">${n}</i>` : ""}</button></li>`;
     }).join("")}</ol></div><div class="cw-pop" hidden></div>`;
   }
   // 点开某一段：显示说明和卡片
   document.addEventListener("click", (e) => {
+    const cur = e.target.closest(".cw-cur");
+    if (cur) { e.stopPropagation(); const box = cur.closest(".cb-where"); box.querySelectorAll(".cw-seg").forEach((b) => { b.setAttribute("aria-expanded", "false"); b.parentNode.classList.remove("sel"); }); box.nextElementSibling.hidden = true; return; }
     const btn = e.target.closest(".cw-seg"); if (!btn) return;
     e.stopPropagation();
     const box = btn.closest(".cb-where"), pop = box.nextElementSibling, g = G.find((x) => x.id === box.dataset.id); if (!g) return;
@@ -159,14 +162,9 @@
     if (open) { pop.hidden = true; return; }
     btn.setAttribute("aria-expanded", "true"); btn.parentNode.classList.add("sel");
     const { d, cards } = segInfo(g, i);
-    // 一层展示：每张卡片只给「术语 + 一句话 + 至多 3 个关键参数」，需要时再点「打开」
-    pop.innerHTML = `${d ? `<p class="cp-d"><b>${esc(g.where.path[i])}</b>${hl(d)}</p>` : `<p class="cp-d"><b>${esc(g.where.path[i])}</b></p>`}
-      ${cards.length ? `<ul class="cp-list">${cards.map((x) => `<li class="${x.id === g.id ? "cur" : ""}">
-        ${tile(x, "sm")}
-        <div class="cp-main"><b>${esc(x.term)}</b><span>${esc(x.plain)}</span>
-          ${(x.keys || []).length ? `<em>${x.keys.slice(0, 3).map((k) => `<i>${esc(k.v)}</i>${esc(k.k)}`).join("<s>·</s>")}</em>` : ""}</div>
-        ${x.id === g.id ? `<small>当前</small>` : `<button type="button" class="cp-open" data-open="${x.id}">打开</button>`}
-      </li>`).join("")}</ul>` : `<p class="cp-none">这一段没有单独的术语卡片。</p>`}`;
+    // 紧凑列表：一张卡片一行（术语 + 一句话），需要时再点「打开」
+    pop.innerHTML = `<p class="cp-d"><b>${esc(g.where.path[i])}</b>${d ? `<span>${esc(d)}</span>` : ""}</p>
+      ${cards.length ? `<ul class="cp-list">${cards.filter((x) => x.id !== g.id).map((x) => `<li>${tile(x, "sm")}<b>${esc(x.term)}</b><span>${esc(x.plain)}</span><button type="button" class="cp-open" data-open="${x.id}">打开</button></li>`).join("")}</ul>` : `<p class="cp-none">这一段没有单独的术语卡片。</p>`}`;
     pop.hidden = false;
     pop.querySelectorAll("[data-open]").forEach((o) => (o.onclick = (ev) => { ev.stopPropagation(); openTerm(o.dataset.open); }));
   }, true);
