@@ -131,6 +131,14 @@
   // 要点：「标题：内容」把标题加粗
   const pointHtml = (p) => { const m = String(p).match(/^([^：:]{1,16})[：:](.+)$/); return m ? `<b>${esc(m[1])}</b>${hl(m[2])}` : hl(p); };
 
+  // 所处位置：整个框架的阶段条，高亮当前所在一段
+  function whereHtml(g) {
+    const w = g.where; if (!w || !(w.path || []).length) return "";
+    const c = (window.MODULE_COLORS || [])[g.m] || ["#3b8bff", "#0a5ce6"];
+    return `<div class="cb-where"><span class="cw-h">${ic("compass")}所处位置</span><ol class="cw-path">${w.path.map((p, i) =>
+      `<li class="${i === w.at ? "on" : i < w.at ? "past" : ""}"${i === w.at ? ` style="background:linear-gradient(145deg,${c[0]},${c[1]})"` : ""}><span>${esc(p)}</span>${i === w.at && w.label ? `<em>${esc(w.label)}</em>` : ""}</li>`).join("")}</ol></div>`;
+  }
+
   function backHtml(g) {
     const rel = related(g);
     const more = [
@@ -141,8 +149,11 @@
     ].join("");
     return `
       <p class="cb-plain">${esc(g.plain)}</p>
+      ${(g.words || []).length ? `<dl class="cb-words">${g.words.map((w) => `<div><dt>${esc(w.w)}</dt><dd>${hl(w.e)}</dd></div>`).join("")}</dl>` : ""}
+      ${whereHtml(g)}
       ${visualHtml(g.visual, g)}
       ${(g.keys || []).length ? `<div class="cb-keys"><span class="ck-h">${ic("target")}关键参数</span><div class="ck-list">${g.keys.map((k) => `<div class="ck"><b>${esc(k.v)}</b><span>${esc(k.k)}</span></div>`).join("")}</div></div>` : ""}
+      ${g.trap ? `<p class="cb-trap">${ic("alert")}<span class="ct-h">易错</span><span>${hl(g.trap)}</span></p>` : ""}
       ${g.mnemonic ? `<p class="cb-mn"><span>口诀</span>${esc(g.mnemonic)}</p>` : ""}
       <details class="cb-more"${moreOpen ? " open" : ""}><summary>详细说明<em>要点 · 例子 · 类比 · 易混</em></summary><div class="cm-body">${more}</div></details>
       <p class="cb-foot"><span class="cb-src">${ic("book")}出处：${esc(g.src)}</span>${rel.length ? `<button type="button" class="link cb-rel" data-id="${g.id}">练相关题（${rel.length}）→</button>` : ""}</p>`;
