@@ -791,3 +791,22 @@ button.cp-card:hover{box-shadow:0 0 0 1.5px var(--accent);color:var(--accent)}
 .cp-card small{font-size:11px;color:var(--muted)}
 .cp-none{color:var(--muted)!important}
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .cw-path li:not(.on):hover,:root:not([data-theme="light"]) .cw-path li.sel:not(.on){background:#1b2a45}}
+/* 出处移到标题下方：模块 + 章名 + 小节标题 */
+.cb-meta{display:flex;flex-wrap:wrap;align-items:center;gap:6px 8px}
+.cb-src2{display:inline-flex;flex-wrap:wrap;align-items:center;gap:4px 6px;font-size:12px;color:var(--muted);min-width:0}
+.cb-src2 > .ic{width:13px;height:13px;flex:none}
+.src-h{font-weight:600}
+.src-g{display:inline-flex;flex-wrap:wrap;align-items:center;gap:4px;min-width:0}
+.src-g + .src-g::before{content:"；";color:var(--muted);margin-right:2px}
+.src-ch{color:var(--ink-2)}
+.cb-src2 .src-a{max-width:260px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:inline-block}
+.cl-body > .cb-src2{margin:0 0 10px}
+.flash-back .cb-foot{justify-content:flex-end}
+@media (max-width:820px){.cb-src2 .src-a{max-width:100%}}
+.flash-back .cb-head{align-items:flex-start}
+.cb-src2{display:flex;flex-direction:column;align-items:flex-start;gap:4px;margin-top:6px}
+.src-row{display:flex;align-items:center;flex-wrap:wrap;gap:4px 6px;min-width:0}
+.src-row > .ic{width:13px;height:13px;flex:none;color:var(--muted)}
+.src-g + .src-g::before{content:none}
+.src-ch{font-size:12px}
+.src-g{display:contents}

@@ -166,17 +166,22 @@
     pop.querySelectorAll("[data-open]").forEach((b) => (b.onclick = (ev) => { ev.stopPropagation(); openTerm(b.dataset.open); }));
   }, true);
 
-  // 出处：解析「第 1 章 1.3；第 12 章 Q2、Q3」，每个小节 / 问题链接到飞书原文对应标题
+  // 出处：解析「第 1 章 1.3；第 12 章 Q2、Q3」，显示章名和小节标题，点击跳到飞书原文对应标题
   function srcHtml(src) {
     const S = window.SOURCES || {};
-    return String(src || "").split(/[；;]/).map((part) => {
-      const m = part.match(/第\s*(\d+)\s*章(.*)/); if (!m) return esc(part.trim());
+    const out = String(src || "").split(/[；;]/).map((part) => {
+      const m = part.match(/第\s*(\d+)\s*章(.*)/); if (!m) return part.trim() ? `<span class="src-x">${esc(part.trim())}</span>` : "";
       const ch = S[m[1]], toks = m[2].match(/\d+\.\d+|Q\d+/g) || [];
-      if (!ch) return esc(part.trim());
+      if (!ch) return `<span class="src-x">${esc(part.trim())}</span>`;
+      const chName = `第 ${m[1]} 章 ${ch.t || ""}`.trim();
       const link = (href, label, title) => `<a class="src-a" href="${href}" target="_blank" rel="noopener" title="${esc(title)}">${esc(label)}</a>`;
-      if (!toks.length) return link(ch.url, `第 ${m[1]} 章`, `打开第 ${m[1]} 章原文`);
-      return `<span class="src-ch">第 ${m[1]} 章</span>` + toks.map((t) => link(ch.url + (ch.a[t] ? "#" + ch.a[t] : ""), t, `打开第 ${m[1]} 章 ${t} 原文`)).join("");
-    }).join('<span class="src-sep">；</span>');
+      if (!toks.length) return `<span class="src-g">${link(ch.url, chName, "打开" + chName + "原文")}</span>`;
+      return `<span class="src-g"><span class="src-ch">${esc(chName)}</span>${toks.map((t) => {
+        const a = ch.a[t] || [], name = a[1] || "";
+        return link(ch.url + (a[0] ? "#" + a[0] : ""), name ? `${t} ${name}` : t, `打开原文：${chName} · ${t} ${name}`);
+      }).join("")}</span>`;
+    }).filter(Boolean);
+    return out.length ? `<div class="cb-src2">${out.map((o) => `<div class="src-row">${ic("book")}${o}</div>`).join("")}</div>` : "";
   }
 
   function backHtml(g) {
@@ -196,7 +201,7 @@
       ${g.trap ? `<p class="cb-trap">${ic("alert")}<span class="ct-h">易错</span><span>${hl(g.trap)}</span></p>` : ""}
       ${g.mnemonic ? `<p class="cb-mn"><span>口诀</span>${esc(g.mnemonic)}</p>` : ""}
       <details class="cb-more"${moreOpen ? " open" : ""}><summary>详细说明<em>要点 · 例子 · 类比 · 易混</em></summary><div class="cm-body">${more}</div></details>
-      <p class="cb-foot"><span class="cb-src">${ic("book")}出处：${srcHtml(g.src)}</span>${rel.length ? `<button type="button" class="link cb-rel" data-id="${g.id}">练相关题（${rel.length}）→</button>` : ""}</p>`;
+      <p class="cb-foot"><span></span>${rel.length ? `<button type="button" class="link cb-rel" data-id="${g.id}">练相关题（${rel.length}）→</button>` : ""}</p>`;
   }
   document.addEventListener("toggle", (e) => { if (e.target.classList && e.target.classList.contains("cb-more")) moreOpen = e.target.open; }, true);
 
@@ -231,7 +236,7 @@
           ${(g.aliases || []).length ? `<p class="cf-alias">${g.aliases.map(esc).join(" · ")}</p>` : ""}
           <p class="cf-hint">先想一想它是什么意思，再点卡片看答案</p>
         </div>
-        <div class="flash-back"><div class="cb-head">${tile(g)}<div><h3>${esc(g.term)}</h3><span class="cf-mod">${esc(MODULES[g.m][0])}</span></div></div>${backHtml(g)}</div>
+        <div class="flash-back"><div class="cb-head">${tile(g)}<div><h3>${esc(g.term)}</h3><div class="cb-meta"><span class="cf-mod">${esc(MODULES[g.m][0])}</span></div>${srcHtml(g.src)}</div></div>${backHtml(g)}</div>
       </div>
       <div class="cv-act">
         ${flipped
@@ -271,7 +276,7 @@
         ${items.map((g) => { const k = s[g.id] && s[g.id].k === 1; return `
           <details class="cl-item ${k ? "known" : ""}">
             <summary><span class="cl-term">${tile(g, "sm")}<span>${esc(g.term)}</span></span><span class="cl-plain">${esc(g.plain)}</span>${g.mnemonic ? `<span class="cl-mn">${esc(g.mnemonic)}</span>` : ""}</summary>
-            <div class="cl-body">${backHtml(g)}
+            <div class="cl-body">${srcHtml(g.src)}${backHtml(g)}
               <div class="cl-act"><button type="button" class="btn ${k ? "" : "primary"}" data-k="${g.id}">${k ? "标为没掌握" : "标为已掌握"}</button></div>
             </div>
           </details>`; }).join("")}
