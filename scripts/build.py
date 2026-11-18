@@ -44,6 +44,17 @@ def main():
             errors.append(f"{tag} 单选题答案数不为 1")
         if q.get("t") == "m" and len(q.get("a", [])) < 2:
             errors.append(f"{tag} 多选题答案少于 2 个")
+        x = q.get("x")
+        if x is None or not q.get("c"):
+            errors.append(f"{tag} 缺少逐项解析 x 或知识点讲解 c")
+        elif len(x) != len(q.get("o", [])):
+            errors.append(f"{tag} 逐项解析 x 的条数与选项数不一致")
+        else:
+            for i, t in enumerate(x):
+                want = "正确" if i in q.get("a", []) else "错误"
+                if not str(t).startswith(want):
+                    errors.append(f"{tag} 第 {i + 1} 项解析应以「{want}」开头")
+                    break
 
     sets = sorted({q["set"] for q in bank if q["set"] != "official"})
     set_list = [{"id": s, "name": f"第 {s} 套"} for s in sets]
