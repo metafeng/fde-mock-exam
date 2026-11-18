@@ -1,0 +1,10 @@
+{
+  "name": "fde-mock-exam",
+  "version": "1.0.0",
+  "description": "腾讯云人工智能前沿部署工程师（FDE）认证理论考试模拟系统",
+  "private": true,
+  "scripts": {
+    "start": "node server.js"
+  },
+  "license": "MIT"
+}

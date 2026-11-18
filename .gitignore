@@ -1,0 +1,8 @@
+node_modules/
+.DS_Store
+*.log
+# 登录服务在服务器上生成的账号文件和签名密钥，不入库
+auth/users.json
+auth/secret
+# 本机部署配置（服务器地址），不入库
+scripts/deploy.env
