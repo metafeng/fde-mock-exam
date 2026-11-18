@@ -213,6 +213,49 @@
     document.body.appendChild(ov);
   }, true);
 
+  // ---- 名词拆解：卡片标题和一句话里出现的英文词 / 缩写，自己没解释的就从全局词典补上 ----
+  const EXTRA_WORDS = [
+    { w: "UI", e: "User Interface，用户界面：屏幕上能看到、能点的页面" },
+    { w: "Ardot", e: "腾讯设计 Ardot：AI 驱动的产设研协作平台，出可编辑 UI 稿并转成代码" },
+    { w: "Enterprise", e: "企业版：面向企业统一部署和管理的版本" },
+    { w: "PPT", e: "演示文稿（幻灯片）" },
+    { w: "IT", e: "Information Technology，企业的信息技术部门" },
+  ];
+  const DICT = (() => {
+    const d = new Map(), own = new Map();
+    G.forEach((g) => (g.words || []).forEach((w) => {
+      const k = w.w.toLowerCase();
+      // 优先用「以这个词命名的卡片」里的解释，比如 ADP 卡片里对 ADP 的定义
+      if (g.term.toLowerCase() === k || g.term.toLowerCase().startsWith(k + " ")) own.set(k, w);
+      if (!d.has(k)) d.set(k, w);
+    }));
+    own.forEach((w, k) => d.set(k, w));
+    EXTRA_WORDS.forEach((w) => { const k = w.w.toLowerCase(); if (!d.has(k)) d.set(k, w); });
+    const STOP = new Set(["ai", "fde", "vs"]); // 太常见，不逐卡解释
+    return [...d.entries()].filter(([k]) => /[a-z]/.test(k) && /^[\x20-\x7e–]+$/.test(k) && !STOP.has(k)).sort((a, b) => b[0].length - a[0].length);
+  })();
+  const escRe = (t) => t.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  function wordsFor(g) {
+    const own = (g.words || []).slice(), have = new Set(own.map((w) => w.w.toLowerCase()));
+    const add = [], used = [];
+    const scan = (txt) => {
+      let t = String(txt);
+      for (const [k, w] of DICT) {
+        if (have.has(k)) continue;
+        const re = new RegExp(`(^|[^A-Za-z0-9])${escRe(k)}(?![A-Za-z0-9])`, "i");
+        if (!re.test(t)) continue;
+        if (used.some((u) => u.includes(k))) continue; // 已被更长的词覆盖（如 AI Native 覆盖 AI）
+        have.add(k); used.push(k); add.push(w);
+        t = t.replace(new RegExp(escRe(k), "ig"), " ");
+      }
+      // W3 / W9 这类周次
+      (t.match(/\bW(\d{1,2})\b/g) || []).forEach((m) => { const k = m.toLowerCase(); if (!have.has(k)) { have.add(k); add.push({ w: m, e: `第 ${m.slice(1)} 周` }); } });
+    };
+    scan(g.term); scan(g.plain);
+    // 标题里的词排在最前面
+    return [...add.filter((w) => new RegExp(escRe(w.w), "i").test(g.term)), ...own, ...add.filter((w) => !new RegExp(escRe(w.w), "i").test(g.term))].slice(0, 7);
+  }
+
   function backHtml(g) {
     const rel = related(g);
     const more = [
@@ -223,7 +266,7 @@
     ].join("");
     return `
       <p class="cb-plain">${esc(g.plain)}</p>
-      ${(g.words || []).length ? `<dl class="cb-words">${g.words.map((w) => `<div><dt>${esc(w.w)}</dt><dd>${hl(w.e)}</dd></div>`).join("")}</dl>` : ""}
+      ${wordsFor(g).length ? `<dl class="cb-words">${wordsFor(g).map((w) => `<div><dt>${esc(w.w)}</dt><dd>${hl(w.e)}</dd></div>`).join("")}</dl>` : ""}
       ${whereHtml(g)}
       ${visualHtml(g.visual, g)}
       ${imgHtml(g)}
