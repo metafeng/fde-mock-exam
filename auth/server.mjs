@@ -96,6 +96,11 @@ const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&l
 
 const LOGO = fs.existsSync(path.join(DIR, "logo.svg")) ? fs.readFileSync(path.join(DIR, "logo.svg"), "utf8") : "";
 
+// 密码框右侧的「小眼睛」：睁眼 = 显示密码，划线 = 隐藏
+const EYE = `<button type="button" class="eye" aria-label="显示密码" aria-pressed="false" tabindex="-1">`
+  + `<svg class="e-on" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><path d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0z"/></svg>`
+  + `<svg class="e-off" style="display:none" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10.6 5.1A10.8 10.8 0 0 1 12 5c6.4 0 10 7 10 7a17.6 17.6 0 0 1-2.9 3.9M6.6 6.6C3.9 8.4 2 12 2 12s3.6 7 10 7a9.7 9.7 0 0 0 5.4-1.6"/><path d="M9.9 9.9a3 3 0 0 0 4.2 4.2"/><path d="M3 3l18 18"/></svg></button>`;
+
 function page(next, error = "", mode = "login", email = "") {
   const reg = mode === "register";
   return `<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
@@ -113,6 +118,9 @@ label{display:block;font-size:13px;color:var(--ink2);margin:0 0 6px}
 input{width:100%;height:44px;border:1px solid var(--line);border-radius:10px;padding:0 14px;font-size:15px;margin-bottom:16px;outline:none;transition:border-color .15s,box-shadow .15s}
 input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(0,82,217,.15)}
 .hint{font-size:12px;color:#00000066;margin:-10px 0 16px}
+.pw{position:relative}.pw input{padding-right:46px}
+.eye{position:absolute;right:6px;top:6px;width:32px;height:32px;margin:0;padding:0;border:0;border-radius:8px;background:none;box-shadow:none;color:#8e8e93;cursor:pointer;display:grid;place-items:center}
+.eye:hover{color:#3a3a3c;background:#f2f2f7}.eye:active{transform:none}.eye svg{width:20px;height:20px}
 button{width:100%;height:46px;border:0;border-radius:12px;background:var(--accent);color:#fff;font-size:16px;font-weight:500;cursor:pointer;margin-top:6px;box-shadow:0 6px 16px rgba(0,82,217,.25)}
 button:active{transform:scale(.98)}.err{background:#fff0ed;color:#d54941;font-size:13px;padding:9px 12px;border-radius:8px;margin-bottom:16px}
 .foot{margin-top:16px;text-align:center;color:#00000066;font-size:12px;line-height:1.6}
@@ -123,11 +131,22 @@ button:active{transform:scale(.98)}.err{background:#fff0ed;color:#d54941;font-si
 ${error ? `<div class="err">${esc(error)}</div>` : ""}
 <input type="hidden" name="next" value="${esc(next)}">
 <label for="u">邮箱</label><input id="u" name="username" type="email" inputmode="email" autocomplete="${reg ? "email" : "username"}" value="${esc(email)}" placeholder="name@example.com" required autofocus>
-<label for="p">密码</label><input id="p" name="password" type="password" autocomplete="${reg ? "new-password" : "current-password"}" ${reg ? 'minlength="8"' : ""} required>
-${reg ? `<p class="hint">至少 8 位</p><label for="p2">确认密码</label><input id="p2" name="password2" type="password" autocomplete="new-password" minlength="8" required>` : ""}
+<label for="p">密码</label><div class="pw"><input id="p" name="password" type="password" autocomplete="${reg ? "new-password" : "current-password"}" ${reg ? 'minlength="8"' : ""} required>${EYE}</div>
+${reg ? `<p class="hint">至少 8 位</p><label for="p2">确认密码</label><div class="pw"><input id="p2" name="password2" type="password" autocomplete="new-password" minlength="8" required>${EYE}</div>` : ""}
 <button type="submit">${reg ? "注册并登录" : "登录"}</button>
 <p class="foot">${reg ? "非腾讯云官方题库，个人备考练习用" : "登录后 30 天内免登录"}</p>
-</form></body></html>`;
+</form>
+<script>
+document.querySelectorAll(".eye").forEach(function (b) {
+  b.addEventListener("click", function () {
+    var i = b.parentNode.querySelector("input"), show = i.type === "password";
+    i.type = show ? "text" : "password";
+    b.setAttribute("aria-label", show ? "隐藏密码" : "显示密码"); b.setAttribute("aria-pressed", String(show));
+    b.querySelector(".e-on").style.display = show ? "none" : ""; b.querySelector(".e-off").style.display = show ? "" : "none";
+    i.focus();
+  });
+});
+</script></body></html>`;
 }
 
 const cookie = (val, age) => `${COOKIE}=${val}; Path=/; Max-Age=${age}; HttpOnly; Secure; SameSite=Lax`;

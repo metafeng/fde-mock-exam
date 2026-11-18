@@ -39,7 +39,15 @@
 
   // ---- 修改密码 ----
   const pwModal = $("#pwModal"), err = $("#pwErr");
-  function closePw() { pwModal.hidden = true; $("#pwForm").reset(); err.hidden = true; }
+  // 密码框的小眼睛：切换明文 / 隐藏
+  document.querySelectorAll("#pwForm .eye").forEach((b) => (b.onclick = () => {
+    const i = b.parentNode.querySelector("input"), show = i.type === "password";
+    i.type = show ? "text" : "password";
+    b.setAttribute("aria-label", show ? "隐藏密码" : "显示密码"); b.setAttribute("aria-pressed", String(show));
+    b.querySelector(".e-on").hidden = show; b.querySelector(".e-off").hidden = !show; i.focus();
+  }));
+  function resetEyes() { document.querySelectorAll("#pwForm .pw").forEach((w) => { w.querySelector("input").type = "password"; w.querySelector(".e-on").hidden = false; w.querySelector(".e-off").hidden = true; }); }
+  function closePw() { pwModal.hidden = true; $("#pwForm").reset(); resetEyes(); err.hidden = true; }
   $("#amPw").onclick = () => { open(false); pwModal.hidden = false; setTimeout(() => $("#pwOld").focus(), 30); };
   $("#pwCancel").onclick = closePw;
   $("#pwForm").onsubmit = async (e) => {
