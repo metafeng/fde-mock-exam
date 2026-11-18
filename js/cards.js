@@ -278,6 +278,32 @@
   }
   document.addEventListener("toggle", (e) => { if (e.target.classList && e.target.classList.contains("cb-more")) moreOpen = e.target.open; }, true);
 
+  // ---- 答题解析里的「相关术语卡片」：找出和这道题最相关的 1–2 张卡片 ----
+  function cardsForQuestion(qi) {
+    const q = BANK[qi]; if (!q) return [];
+    const flat = (t) => String(t || "").replace(/\s+/g, "");
+    const K = flat(q.k), Q = flat(q.q), C = flat(q.c);
+    return G.map((g) => {
+      const keys = [g.term].concat(g.aliases || []).map(flat).filter((k) => k.length >= 2);
+      let sc = 0;
+      keys.forEach((k, i) => { const w = i === 0 ? 1.5 : 1; if (K.includes(k)) sc += 5 * w; if (Q.includes(k)) sc += 3 * w; if (C.includes(k)) sc += 1 * w; });
+      if (!sc) return null;
+      if (g.m === q.m) sc += 2;
+      sc /= Math.sqrt(related(g).length / 15 + 1); // 几乎每题都沾边的卡片（如 FDE）降权
+      return { g, sc };
+    }).filter(Boolean).sort((a, b) => b.sc - a.sc).filter((x, i, arr) => arr.findIndex((y) => y.g.term === x.g.term) === i).slice(0, 2).filter((x, i, arr) => i === 0 || x.sc >= arr[0].sc * 0.45).map((x) => x.g);
+  }
+  window.cardPeekHtml = function (qi) {
+    const list = cardsForQuestion(qi); if (!list.length) return "";
+    return `<p class="sec">相关术语卡片</p>${list.map((g) => `<div class="qcard">
+      <div class="qc-head">${tile(g, "sm")}<b>${esc(g.term)}</b><span class="cf-mod">${esc(MODULES[g.m][0])}</span></div>
+      <p class="qc-plain">${esc(g.plain)}</p>
+      ${visualHtml(g.visual, g)}
+      ${g.trap ? `<p class="cb-trap">${ic("alert")}<span class="ct-h">易错</span><span>${hl(g.trap)}</span></p>` : ""}
+      <details class="qc-more"><summary>展开完整卡片</summary><div class="flash-back qc-full">${backHtml(g)}</div></details>
+    </div>`).join("")}`;
+  };
+
   function practiceRelated(id) {
     const g = G.find((x) => x.id === id); if (!g) return;
     const ids = related(g).slice().sort(() => Math.random() - 0.5).slice(0, 15);

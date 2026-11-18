@@ -970,3 +970,18 @@ button.cp-card:hover{box-shadow:0 0 0 1.5px var(--accent);color:var(--accent)}
 .xi.s-other .xe{font-weight:400;color:var(--ink-2)}
 .xm,.xm.ok,.xm.no{margin-top:20px}
 .xl{color:var(--muted);font-weight:600}
+/* 答题解析里的相关术语卡片 */
+.qcard{background:var(--panel);border-radius:14px;padding:14px 16px 10px;margin:0 0 10px;box-shadow:0 0 0 1px var(--line)}
+.qc-head{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.qc-head b{font-size:15px;color:var(--ink)}
+.qc-head .term-tile.sm{width:28px;height:28px;border-radius:8px;flex:none}
+.qc-head .term-tile.sm .ic{width:15px;height:15px}
+.qcard .qc-plain{margin:0 0 12px!important;font-size:14px;font-weight:600;color:var(--ink);line-height:1.6}
+.qcard .vz2{margin-bottom:10px}
+.qcard .cb-trap{margin-bottom:6px}
+.qc-more summary{cursor:pointer;list-style:none;font-size:13px;font-weight:600;color:var(--accent);padding:6px 0;display:flex;align-items:center;gap:6px}
+.qc-more summary::-webkit-details-marker{display:none}
+.qc-more summary::before{content:"";width:6px;height:6px;border-right:2px solid currentColor;border-bottom:2px solid currentColor;transform:rotate(-45deg);transition:transform .2s}
+.qc-more[open] summary::before{transform:rotate(45deg)}
+.qc-full{padding:8px 0 4px;border-top:1px solid var(--line);margin-top:4px}
+.feedback .qcard p{margin:0}

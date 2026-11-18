@@ -176,6 +176,7 @@ function feedbackHtml(n, cls) {
     ${perOpt}
     <p class="sec">本题考点</p>
     <p>${q.k}</p>
+    ${window.cardPeekHtml ? window.cardPeekHtml(S.ids[n]) : ""}
     ${q.c ? `<p class="sec">知识点讲解</p><p class="concept">${String(q.c).replace(/\s*(?=[②③④⑤⑥⑦⑧⑨])/g, "\n")}</p>` : ""}
     <p class="src">出处：${q.src}</p>`;
   // 练习中答对：解析默认收起，不打断做题节奏；答错或交卷后的回顾：完整展开
