@@ -172,7 +172,13 @@
           : `<button type="button" class="btn primary act-flip" id="cvFlip">看答案</button>`}
       </div>
       <p class="cv-keys">快捷键：空格翻面　← 不认识　→ 认识了</p>`;
-    $("#flash").onclick = (e) => { if (e.target.closest(".cb-rel")) return; flipped = !flipped; renderCard(); };
+    // 正面：点哪里都翻面；背面：只有点标题行才翻回去，点「展开详细说明」、图解、文字都不翻面
+    $("#flash").onclick = (e) => {
+      if (e.target.closest(".cb-rel, .cb-more, a, button")) return;
+      if (flipped && !e.target.closest(".cb-head")) return;
+      if (String(window.getSelection && window.getSelection()) !== "") return; // 正在选中文字时不翻面
+      flipped = !flipped; renderCard();
+    };
     const f = $("#cvFlip"); if (f) f.onclick = () => { flipped = true; renderCard(); };
     const no = $("#cvNo"); if (no) no.onclick = () => answer(false);
     const ok = $("#cvOk"); if (ok) ok.onclick = () => answer(true);
@@ -226,7 +232,7 @@
 
   $("#cardsEntry").onclick = openCards;
   document.addEventListener("keydown", (e) => {
-    if ($("#cardView").hidden || P.view !== "card" || !queue.length || /INPUT|TEXTAREA/.test(document.activeElement.tagName)) return;
+    if ($("#cardView").hidden || P.view !== "card" || !queue.length || /INPUT|TEXTAREA|SUMMARY|BUTTON/.test(document.activeElement.tagName)) return;
     if (e.key === " ") { e.preventDefault(); flipped = !flipped; renderCard(); }
     else if (flipped && e.key === "ArrowLeft") answer(false);
     else if (flipped && e.key === "ArrowRight") answer(true);

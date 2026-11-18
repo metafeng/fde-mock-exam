@@ -624,3 +624,8 @@ body.in-exam .acct{display:none}
 .vz2 .vn-ic,.vz2 .vn-ic.sm{color:#fff}
 .vn-abs b,.vn-abs span:not(.vn-ic){background:var(--panel-2);border-radius:6px;padding:0 4px}
 .vz2-cycle{margin:-10px auto 58px}
+.flash.flipped{cursor:default}
+.flash.flipped .cb-head{cursor:pointer}
+.flash.flipped .cb-head::after{content:"点这里翻回正面";margin-left:auto;align-self:flex-start;font-size:12px;color:var(--muted);white-space:nowrap}
+@media (max-width:820px){.flash.flipped .cb-head::after{content:"翻回"}}
+.cb-mn span,.cb-mn .ic{flex:none;white-space:nowrap}
