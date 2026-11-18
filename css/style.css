@@ -964,3 +964,9 @@ button.cp-card:hover{box-shadow:0 0 0 1.5px var(--accent);color:var(--accent)}
 .xe{color:var(--muted)}
 .xt,.t-ok,.t-bad,.t-miss{background:none!important;padding:0;margin-left:8px;font-size:11.5px;font-weight:700;border-radius:0}
 .t-ok{color:var(--ok)} .t-bad{color:var(--bad)} .t-miss{color:var(--mark)}
+/* 逐项解析 v4：解析是重点，选项原文弱化 */
+.xi .xo,.xi.s-hit .xo,.xi.s-bad .xo,.xi.s-right .xo,.xi.s-other .xo{font-size:12.5px;font-weight:400;color:var(--muted);line-height:1.5}
+.xi .xe{margin-top:3px!important;font-size:14px;line-height:1.7;color:var(--ink);font-weight:500}
+.xi.s-other .xe{font-weight:400;color:var(--ink-2)}
+.xm,.xm.ok,.xm.no{margin-top:20px}
+.xl{color:var(--muted);font-weight:600}

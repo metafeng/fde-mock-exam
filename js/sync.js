@@ -109,10 +109,14 @@
   Storage.prototype.clear = (function (orig) { return function () { orig.call(this); }; })(Storage.prototype.clear);
 
   // ---- 加载页面脚本 ----
+  // 发布时把 __BUILD__ 替换成版本号：脚本地址带 ?v=版本号，浏览器可以长期缓存，发新版时地址变化自动更新
+  const BUILD = "__BUILD__"; window.FDE_BUILD = BUILD;
+  const VQ = /^\d+$/.test(BUILD) ? "?v=" + BUILD : "";
+  // 一启动就并行预下载全部脚本（和拉取同步数据同时进行）
+  APP_SCRIPTS.forEach((src) => { const l = document.createElement("link"); l.rel = "preload"; l.as = "script"; l.href = src + VQ; document.head.appendChild(l); });
+  // 同步完成后按顺序执行（async=false：并行下载、按插入顺序执行）
   function loadApp() {
-    let i = 0;
-    const next = () => { if (i >= APP_SCRIPTS.length) return; const s = document.createElement("script"); s.src = APP_SCRIPTS[i++]; s.onload = next; document.body.appendChild(s); };
-    next();
+    APP_SCRIPTS.forEach((src) => { const s = document.createElement("script"); s.src = src + VQ; s.async = false; document.body.appendChild(s); });
   }
 
   // ---- 启动：先同步再加载 ----
@@ -179,7 +183,7 @@
   const check = () => fetch("version.txt", { cache: "no-store", credentials: "same-origin" })
     .then((r) => (r.ok ? r.text() : null)).then((v) => {
       v = v && v.trim(); if (!v || !/^\d+$/.test(v)) return;
-      if (base === null) { base = v; return; }
+      if (base === null) { base = /^\d+$/.test(window.FDE_BUILD || "") ? window.FDE_BUILD : v; if (base === v) return; }
       if (v !== base && !shown) {
         shown = true;
         const bar = document.createElement("button");
