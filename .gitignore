@@ -8,3 +8,5 @@ auth/secret
 scripts/deploy.env
 # 登录服务在服务器上保存的各账号练习数据，不入库
 auth/data/
+auth/initial-admin.txt
+auth/users.json.tmp

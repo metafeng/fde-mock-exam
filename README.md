@@ -183,19 +183,29 @@ bash scripts/deploy.sh
 
 脚本会先重新生成题库，再把 `index.html`、`css`、`js`、`assets` 同步到服务器。
 
-### 登录
+### 登录与多账号
 
-线上站点需要账号密码登录（`auth/server.mjs`，零依赖 Node 服务，部署在服务器 `/opt/fde-auth`，systemd 服务名 `fde-auth`，监听 127.0.0.1:19015，nginx 用 `auth_request` 校验）。
+线上站点需要登录（`auth/server.mjs`，零依赖 Node 服务，部署在服务器 `/opt/fde-auth`，systemd 服务名 `fde-auth`，监听 127.0.0.1:19015，nginx 用 `auth_request` 校验）。
+
+- **自助注册**：登录页有「登录 / 注册」两个标签，用邮箱 + 密码（至少 8 位）注册，注册后自动登录。邮箱不区分大小写；同一 IP 每小时最多注册 5 个账号。
+- **每个账号的练习数据相互独立**，保存在服务器 `/opt/fde-auth/data/`（每个账号一个 JSON 文件），通过 `GET/PUT /api/state` 读写，带版本号防止多设备互相覆盖。
+- **首次部署**：登录服务第一次启动、还没有任何账号时，会自动生成一个随机管理员账号（`admin-xxxxxx@localhost` + 随机密码），写进服务器上的 `/opt/fde-auth/initial-admin.txt`（仅所有者可读）并打印到服务日志：
+
+  ```bash
+  sudo cat /opt/fde-auth/initial-admin.txt     # 或 journalctl -u fde-auth
+  ```
+
+- **账号、密码和练习数据都只在服务器上**（`users.json`、`secret`、`data/` 均已加入 `.gitignore`），不会提交到仓库。
 
 在服务器上管理账号：
 
 ```bash
 cd /opt/fde-auth
-sudo -u www-data node server.mjs --set-user 用户名 新密码   # 新增账号或改密码
-sudo -u www-data node server.mjs --del-user 用户名          # 删除账号（该账号会立即下线）
+sudo -u www-data node server.mjs --set-user 邮箱 新密码   # 新增账号或重置密码
+sudo -u www-data node server.mjs --del-user 邮箱          # 删除账号（该账号会立即下线）
 ```
 
-各账号的练习数据保存在服务器 `/opt/fde-auth/data/`（每个账号一个 JSON 文件），通过 `GET/PUT /api/state` 读写，带版本号防止多设备互相覆盖；nginx 需把 `/api/` 转发到登录服务。
+nginx 需要把 `/login`、`/register`、`/logout`、`/api/` 转发到登录服务（这几个路径不做登录校验，由登录服务自己判断），其余路径用 `auth_request` 校验登录状态。
 
 ## 目录
 
