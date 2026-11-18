@@ -69,14 +69,44 @@
     }));
   }
 
+  // ---- 图解：把概念结构画出来 ----
+  function visualHtml(v, g) {
+    if (!v || !v.type) return "";
+    const c = (window.MODULE_COLORS || [])[g.m] || ["#3b8bff", "#0a5ce6"];
+    const it = (x, i) => `<div class="vz-item"><span class="vz-n" style="background:${c[1]}">${i + 1}</span><b>${esc(x.t)}</b>${x.d ? `<span>${esc(x.d)}</span>` : ""}</div>`;
+    const items = v.items || [];
+    let body = "";
+    if (v.type === "flow") body = `<div class="vz-flow">${items.map((x, i) => (i ? `<span class="vz-arrow" aria-hidden="true">→</span>` : "") + it(x, i)).join("")}</div>`;
+    else if (v.type === "cycle") body = `<div class="vz-flow vz-cycle">${items.map((x, i) => (i ? `<span class="vz-arrow" aria-hidden="true">→</span>` : "") + it(x, i)).join("")}<span class="vz-back" aria-hidden="true">↺ 回到「${esc(items[0] ? items[0].t : "")}」</span></div>`;
+    else if (v.type === "stack") body = `<div class="vz-stack">${items.map((x, i) => `<div class="vz-layer" style="--w:${100 - i * (36 / Math.max(items.length, 1))}%;background:linear-gradient(90deg,${c[0]}22,${c[1]}14)"><b>${esc(x.t)}</b>${x.d ? `<span>${esc(x.d)}</span>` : ""}</div>`).join("")}</div>`;
+    else if (v.type === "levels") {
+      const m = v.mark && v.mark.between;
+      body = `<div class="vz-levels">${items.map((x, i) => {
+        const gap = m && i === m[1] ? `<div class="vz-gap"><span>${esc(v.mark.label || "")}</span></div>` : "";
+        return gap + `<div class="vz-lv" style="--h:${30 + i * (60 / Math.max(items.length - 1, 1))}%"><div class="vz-bar" style="background:linear-gradient(180deg,${c[0]},${c[1]})"></div><b>${esc(x.t)}</b>${x.d ? `<span>${esc(x.d)}</span>` : ""}</div>`;
+      }).join("")}</div>`;
+    } else if (v.type === "compare") {
+      const side = (s2, cls) => `<div class="vz-side ${cls}"><b>${esc(s2.t)}</b><ul>${(s2.items || []).map((x) => `<li>${esc(x)}</li>`).join("")}</ul></div>`;
+      body = `<div class="vz-compare">${side(v.left || {}, "l")}<span class="vz-vs">VS</span>${side(v.right || {}, "r")}</div>`;
+    } else if (v.type === "grid") body = `<div class="vz-grid n${Math.min(items.length, 4)}">${items.map(it).join("")}</div>`;
+    return `<figure class="vz"><figcaption>${ic("grid")}图解</figcaption>${body}${v.note ? `<p class="vz-note">${esc(v.note)}</p>` : ""}</figure>`;
+  }
+
+  // 要点：「标题：内容」把标题加粗
+  const pointHtml = (p) => { const m = String(p).match(/^([^：:]{1,16})[：:](.+)$/); return m ? `<b>${esc(m[1])}</b>${esc(m[2])}` : esc(p); };
+
   function backHtml(g) {
     const rel = related(g);
     return `
-      <p class="cb-plain"><span class="cb-ic i-plain">${ic("chat")}</span><span>${esc(g.plain)}</span></p>
-      ${g.analogy ? `<p class="cb-row"><span class="cb-tag t-ana">${ic("bulb")}类比</span><span>${esc(g.analogy)}</span></p>` : ""}
-      <div class="cb-pts"><span class="cb-tag t-pt">${ic("list")}要点</span><ul class="cb-points">${(g.points || []).map((p) => `<li>${esc(p)}</li>`).join("")}</ul></div>
-      ${g.confuse ? `<p class="cb-row"><span class="cb-tag t-conf">${ic("alert")}易混</span><span>${esc(g.confuse)}</span></p>` : ""}
-      ${g.mnemonic ? `<p class="cb-row"><span class="cb-tag t-mn">${ic("music")}口诀</span><b>${esc(g.mnemonic)}</b></p>` : ""}
+      <p class="cb-plain">${esc(g.plain)}</p>
+      ${visualHtml(g.visual, g)}
+      ${g.example ? `<div class="cb-example"><span class="cb-tag t-ex">${ic("chat")}举个例子</span><p>${esc(g.example)}</p></div>` : ""}
+      <div class="cb-sec"><span class="cb-tag t-pt">${ic("list")}要点</span><ol class="cb-points">${(g.points || []).map((p) => `<li>${pointHtml(p)}</li>`).join("")}</ol></div>
+      ${g.analogy || g.confuse ? `<div class="cb-duo">
+        ${g.analogy ? `<div class="cb-note n-ana"><span class="cb-tag t-ana">${ic("bulb")}类比</span><p>${esc(g.analogy)}</p></div>` : ""}
+        ${g.confuse ? `<div class="cb-note n-conf"><span class="cb-tag t-conf">${ic("alert")}易混</span><p>${esc(g.confuse)}</p></div>` : ""}
+      </div>` : ""}
+      ${g.mnemonic ? `<div class="cb-mn">${ic("music")}<span>口诀</span><b>${esc(g.mnemonic)}</b></div>` : ""}
       <p class="cb-foot"><span class="cb-src">${ic("book")}出处：${esc(g.src)}</span>${rel.length ? `<button type="button" class="link cb-rel" data-id="${g.id}">练相关题（${rel.length}）→</button>` : ""}</p>`;
   }
 
