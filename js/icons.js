@@ -124,3 +124,15 @@ window.iconSvg = function (name, cls) {
   const d = window.ICONS[name] || window.ICONS.bulb;
   return `<svg class="${cls || "ic"}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${d}</svg>`;
 };
+// 腾讯 AI 产品的官方 logo（取自各产品官网；ADP 官网使用腾讯云标识）
+window.PRODUCT_LOGOS = {
+  workbuddy: "assets/logos/workbuddy.svg",
+  codebuddy: "assets/logos/codebuddy.svg",
+  miora: "assets/logos/miora.png",
+  ardot: "assets/logos/ardot.png",
+  adp: "assets/logos/tencent-cloud.svg",
+};
+window.productLogo = function (name) {
+  const k = String(name || "").trim().toLowerCase().replace(/\s+/g, "");
+  return window.PRODUCT_LOGOS[k] || null;
+};

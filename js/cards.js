@@ -9,7 +9,12 @@
   const store = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} };
   const ic = (n, c) => (window.iconSvg ? window.iconSvg(n, c) : "");
   // 术语图标：模块配色的圆角方块里放线性图标
-  const tile = (g, size) => { const c = (window.MODULE_COLORS || [])[g.m] || ["#3b8bff", "#0a5ce6"]; return `<span class="term-tile ${size || ""}" style="background:linear-gradient(180deg,${c[0]},${c[1]})">${ic(g.icon)}</span>`; };
+  const tile = (g, size) => {
+    const logo = window.productLogo && window.productLogo(g.term);
+    if (logo) return `<span class="term-tile logo ${size || ""}"><img src="${logo}" alt="${g.term} logo"></span>`;
+    const c = (window.MODULE_COLORS || [])[g.m] || ["#3b8bff", "#0a5ce6"];
+    return `<span class="term-tile ${size || ""}" style="background:linear-gradient(180deg,${c[0]},${c[1]})">${ic(g.icon)}</span>`;
+  };
   const esc = (t) => String(t == null ? "" : t).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
 
   // 术语 id：模块 + 术语名
@@ -77,8 +82,12 @@
     const TONE = { bad: ["#ff7b7b", "#e03131"], good: ["#43d17f", "#1f9d55"], warn: ["#ffbf4d", "#e8890c"] };
     const toneOf = (n) => /^(listx|ban|xcircle|stop|trash|bug|eyeoff|minus)$/.test(n) ? "bad" : /^(listcheck|check|shieldcheck|thumbup|trophy|badge|plus)$/.test(n) ? "good" : /^(alert|hourglass)$/.test(n) ? "warn" : "";
     const gradOf = (n) => { const t = TONE[toneOf(n)] || c; return `background:linear-gradient(145deg,${t[0]},${t[1]})`; };
-    const icb = (name, cls, num) => `<span class="${cls || "vn-ic"}" style="${gradOf(name || g.icon)}">${window.iconSvg(name || g.icon || "bulb")}${num ? `<i class="vn-num">${num}</i>` : ""}</span>`;
-    const node = (x, i, num) => `<div class="vn">${icb(x.i, "", num ? i + 1 : 0)}<b>${esc(x.t)}</b>${x.d ? `<span>${hl(x.d)}</span>` : ""}</div>`;
+    const icb = (name, cls, num, title) => {
+      const logo = window.productLogo && window.productLogo(title);
+      if (logo) return `<span class="${cls || "vn-ic"} vn-logo"><img src="${logo}" alt="">${num ? `<i class="vn-num">${num}</i>` : ""}</span>`;
+      return `<span class="${cls || "vn-ic"}" style="${gradOf(name || g.icon)}">${window.iconSvg(name || g.icon || "bulb")}${num ? `<i class="vn-num">${num}</i>` : ""}</span>`;
+    };
+    const node = (x, i, num) => `<div class="vn">${icb(x.i, "", num ? i + 1 : 0, x.t)}<b>${esc(x.t)}</b>${x.d ? `<span>${hl(x.d)}</span>` : ""}</div>`;
     const arrow = `<svg class="vz-arr" viewBox="0 0 24 12" aria-hidden="true"><path d="M1 6h20M16 1.5L21.5 6 16 10.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
     const items = v.items || [];
     let body = "";
@@ -91,25 +100,26 @@
       const tips = items.map((_, i) => { const a = -Math.PI / 2 + ((i + 0.5) * 2 * Math.PI) / n; const x = cx + R * Math.cos(a), y = cx + R * Math.sin(a); const deg = (a * 180) / Math.PI + 90; return `<path d="M-5 -4L1 0L-5 4" transform="translate(${x.toFixed(1)} ${y.toFixed(1)}) rotate(${deg.toFixed(1)})" fill="none" stroke="${c[1]}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>`; }).join("");
       body = `<div class="vz2-cycle" style="--s:${S}px">
         <svg class="vz-ring" viewBox="0 0 ${S} ${S}" aria-hidden="true"><circle cx="${cx}" cy="${cx}" r="${R}" fill="none" stroke="${c[0]}" stroke-opacity=".35" stroke-width="2" stroke-dasharray="4 5"/>${tips}</svg>
-        ${items.map((x, i) => `<div class="vn vn-abs" style="left:${(pos[i][0] / S * 100).toFixed(2)}%;top:${(pos[i][1] / S * 100).toFixed(2)}%">${icb(x.i, "", i + 1)}<b>${esc(x.t)}</b>${x.d ? `<span>${esc(x.d)}</span>` : ""}</div>`).join("")}
+        ${items.map((x, i) => `<div class="vn vn-abs" style="left:${(pos[i][0] / S * 100).toFixed(2)}%;top:${(pos[i][1] / S * 100).toFixed(2)}%">${icb(x.i, "", i + 1, x.t)}<b>${esc(x.t)}</b>${x.d ? `<span>${esc(x.d)}</span>` : ""}</div>`).join("")}
       </div>`;
     } else if (v.type === "stack") {
-      body = `<div class="vz2-stack">${items.map((x, i) => `<div class="vz2-layer" style="--w:${100 - i * (24 / Math.max(items.length - 1, 1))}%">${icb(x.i, "vn-ic sm")}<b>${esc(x.t)}</b><span>${esc(x.d || "")}</span></div>`).join("")}</div>`;
+      body = `<div class="vz2-stack">${items.map((x, i) => `<div class="vz2-layer" style="--w:${100 - i * (24 / Math.max(items.length - 1, 1))}%">${icb(x.i, "vn-ic sm", 0, x.t)}<b>${esc(x.t)}</b><span>${esc(x.d || "")}</span></div>`).join("")}</div>`;
     } else if (v.type === "levels") {
       const m = v.mark && v.mark.between;
       body = `<div class="vz2-levels">${items.map((x, i) => {
         const gap = m && i === m[1] ? `<div class="vz2-cliff"><span>${esc(v.mark.label || "")}</span></div>` : "";
-        return gap + `<div class="vz2-lv">${icb(x.i, "vn-ic sm")}<b>${esc(x.t)}</b>${x.d ? `<span>${esc(x.d)}</span>` : ""}<div class="vz2-bar" style="height:${18 + i * (70 / Math.max(items.length - 1, 1))}px;background:linear-gradient(180deg,${c[0]},${c[1]})"></div></div>`;
+        return gap + `<div class="vz2-lv">${icb(x.i, "vn-ic sm", 0, x.t)}<b>${esc(x.t)}</b>${x.d ? `<span>${esc(x.d)}</span>` : ""}<div class="vz2-bar" style="height:${18 + i * (70 / Math.max(items.length - 1, 1))}px;background:linear-gradient(180deg,${c[0]},${c[1]})"></div></div>`;
       }).join("")}</div>`;
     } else if (v.type === "compare") {
       const L = v.left || {}, Rt = v.right || {}, rows = Math.max((L.items || []).length, (Rt.items || []).length);
       const tl = toneOf(L.i || ""), tr = toneOf(Rt.i || "");
-      const fix = tl === "bad" && tr === "good"; // 左错右对：中间用箭头表示「改成」
+      const fix = tl === "bad" && tr === "good";
+      const headIc = (side, def) => { const lg = window.productLogo && window.productLogo(side.t); return lg ? `<img class="cmp-logo" src="${lg}" alt="">` : window.iconSvg(side.i || def, "ic"); }; // 左错右对：中间用箭头表示「改成」
       const mark = (t) => t === "bad" ? `<em class="mk bad">✕</em>` : t === "good" ? `<em class="mk good">✓</em>` : "";
       let r = "";
       for (let i = 0; i < rows; i++) r += `<div class="cmp-c l ${tl}">${mark(tl)}<span>${esc((L.items || [])[i] || "")}</span></div><div class="cmp-mid ${fix ? "fix" : ""}">${fix ? arrow : ""}</div><div class="cmp-c r ${tr}">${mark(tr)}<span>${esc((Rt.items || [])[i] || "")}</span></div>`;
       body = `<div class="vz2-cmp">
-        <div class="cmp-h l ${tl}">${window.iconSvg(L.i || "check", "ic")}<b>${esc(L.t || "")}</b></div><div class="cmp-vs">${fix ? "" : "VS"}</div><div class="cmp-h r ${tr}">${window.iconSvg(Rt.i || "xcircle", "ic")}<b>${esc(Rt.t || "")}</b></div>
+        <div class="cmp-h l ${tl}">${headIc(L, "check")}<b>${esc(L.t || "")}</b></div><div class="cmp-vs">${fix ? "" : "VS"}</div><div class="cmp-h r ${tr}">${headIc(Rt, "xcircle")}<b>${esc(Rt.t || "")}</b></div>
         ${r}
       </div>`;
     } else {

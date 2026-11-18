@@ -245,6 +245,7 @@ js/icons.js         术语卡片图标与模块配色
 js/sources.js       课程原文（飞书）各章小节 / FAQ 问题的锚点，用于卡片出处跳转
 js/frameworks.js    卡片「所处位置」每一段的说明和关联卡片
 assets/course/      课程原图（从飞书课程文档下载，WebP 格式）
+assets/logos/       WorkBuddy、CodeBuddy、Miora、Ardot 官方图标（取自各产品官网），ADP 使用腾讯云标识
 data/m0~m9.json     各模块题目源文件，set 字段表示第几套
 data/glossary/      术语卡片源文件（g0~g9.json，按模块）
 data/official.json  官方模拟考试 15 题
