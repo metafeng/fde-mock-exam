@@ -256,6 +256,7 @@
     return [...add.filter((w) => new RegExp(escRe(w.w), "i").test(g.term)), ...own, ...add.filter((w) => !new RegExp(escRe(w.w), "i").test(g.term))].slice(0, 7);
   }
 
+  window.srcLinksHtml = (src) => srcHtml(src);
   function backHtml(g, o) {
     o = o || {}; // o.lite：上方已展示一句话、图解、易错，这里不再重复
     const rel = related(g);
@@ -274,7 +275,7 @@
       ${(g.keys || []).length ? `<div class="cb-keys"><span class="ck-h">${ic("target")}关键参数</span><div class="ck-list">${g.keys.map((k) => `<div class="ck"><b>${esc(k.v)}</b><span>${esc(k.k)}</span></div>`).join("")}</div></div>` : ""}
       ${g.trap && !o.lite ? `<p class="cb-trap">${ic("alert")}<span class="ct-h">易错</span><span>${hl(g.trap)}</span></p>` : ""}
       ${g.mnemonic ? `<p class="cb-mn"><span>口诀</span>${esc(g.mnemonic)}</p>` : ""}
-      <details class="cb-more"${moreOpen ? " open" : ""}><summary>详细说明<em>要点 · 例子 · 类比 · 易混</em></summary><div class="cm-body">${more}</div></details>
+      <details class="cb-more"${moreOpen || o.lite ? " open" : ""}><summary>详细说明<em>要点 · 例子 · 类比 · 易混</em></summary><div class="cm-body">${more}</div></details>
       ${o.lite ? "" : `<p class="cb-foot"><span></span>${rel.length ? `<button type="button" class="link cb-rel" data-id="${g.id}">练相关题（${rel.length}）→</button>` : ""}</p>`}`;
   }
   document.addEventListener("toggle", (e) => { if (e.target.classList && e.target.classList.contains("cb-more")) moreOpen = e.target.open; }, true);

@@ -987,3 +987,5 @@ button.cp-card:hover{box-shadow:0 0 0 1.5px var(--accent);color:var(--accent)}
 .feedback .qcard p{margin:0}
 .qc-more .flash-back.qc-full{display:block;padding:10px 0 4px;animation:none}
 .qc-more summary em{font-style:normal;font-weight:400;font-size:12px;color:var(--muted);margin-left:4px}
+.fb-src{margin-top:14px}
+.fb-src-h{font-size:12px;color:var(--muted);font-weight:600}

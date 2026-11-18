@@ -172,13 +172,16 @@ function feedbackHtml(n, cls) {
   const head = S.browse
     ? `正确答案 ${rightL}`
     : `${r ? "回答正确" : (a.length ? "回答错误" : "未作答")} · 正确答案 ${rightL} · 你的答案 ${mineL}`;
+  // 有相关术语卡片时，知识点讲解由卡片承担，不再单独列出；出处可点击跳到飞书原文
+  const cardsHtml = window.cardPeekHtml ? window.cardPeekHtml(S.ids[n]) : "";
+  const srcLinks = window.srcLinksHtml ? window.srcLinksHtml(q.src) : "";
   const detail = `<p class="sec">逐项解析</p>
     ${perOpt}
     <p class="sec">本题考点</p>
     <p>${q.k}</p>
-    ${window.cardPeekHtml ? window.cardPeekHtml(S.ids[n]) : ""}
-    ${q.c ? `<p class="sec">知识点讲解</p><p class="concept">${String(q.c).replace(/\s*(?=[②③④⑤⑥⑦⑧⑨])/g, "\n")}</p>` : ""}
-    <p class="src">出处：${q.src}</p>`;
+    ${cardsHtml}
+    ${q.c && !cardsHtml ? `<p class="sec">知识点讲解</p><p class="concept">${String(q.c).replace(/\s*(?=[②③④⑤⑥⑦⑧⑨])/g, "\n")}</p>` : ""}
+    ${srcLinks ? `<div class="cb-meta fb-src"><span class="fb-src-h">出处</span>${srcLinks}</div>` : `<p class="src">出处：${q.src}</p>`}`;
   // 练习中答对：解析默认收起，不打断做题节奏；答错或交卷后的回顾：完整展开
   const fold = !S.browse && !S.done && r;
   return `<div class="${cls} ${S.browse || r ? "r" : "w"}">
