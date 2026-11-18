@@ -950,3 +950,17 @@ button.cp-card:hover{box-shadow:0 0 0 1.5px var(--accent);color:var(--accent)}
 /* 其他错误项：弱化 */
 .xi.s-other{opacity:.72}
 .xi.s-other .xo{color:var(--ink-2)}
+/* 逐项解析 v3：简约 */
+.feedback .verdict{padding:0;background:none!important;margin:0 0 6px;gap:6px}
+.vd-ic{width:auto;height:auto;background:none!important;font-size:16px}
+.feedback.r .vd-ic{color:var(--ok)} .feedback.w .vd-ic{color:var(--bad)}
+.xlist{gap:0;border-top:1px solid var(--line)}
+.xi,.xi.s-hit,.xi.s-right,.xi.s-bad,.xi.s-miss,.xi.s-other{border:0;border-bottom:1px solid var(--line);border-radius:0;background:none;padding:10px 6px;opacity:1;gap:10px}
+.xi.s-hit{background:color-mix(in srgb,var(--ok-soft) 60%,transparent)}
+.xi.s-bad{background:color-mix(in srgb,var(--bad-soft) 70%,transparent)}
+.xm,.xm.ok,.xm.no,.xi.s-bad .xm.no{width:16px;height:auto;background:none!important;border-radius:0;font-size:15px;margin-top:1px}
+.xm.ok{color:var(--ok)} .xm.no,.xi.s-bad .xm.no{color:var(--bad)}
+.xi .xo,.xi.s-hit .xo,.xi.s-bad .xo,.xi.s-right .xo,.xi.s-other .xo{font-weight:500;color:var(--ink)}
+.xe{color:var(--muted)}
+.xt,.t-ok,.t-bad,.t-miss{background:none!important;padding:0;margin-left:8px;font-size:11.5px;font-weight:700;border-radius:0}
+.t-ok{color:var(--ok)} .t-bad{color:var(--bad)} .t-miss{color:var(--mark)}

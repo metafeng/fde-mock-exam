@@ -165,7 +165,7 @@ function feedbackHtml(n, cls) {
       const txt = String(q.x[o]).replace(/^(正确|错误)[：:]\s*/, "");
       // 四种状态：答对（选了正确项）/ 错选（选了错误项）/ 漏选（正确项没选）/ 其他错误项
       const st = S.browse ? (ok ? "s-right" : "s-other") : ok ? (picked ? "s-hit" : "s-miss") : (picked ? "s-bad" : "s-other");
-      const tag = S.browse ? "" : st === "s-hit" ? `<em class="xt t-ok">你的选择</em>` : st === "s-bad" ? `<em class="xt t-bad">你的选择</em>` : st === "s-miss" ? `<em class="xt t-miss">漏选</em>` : "";
+      const tag = S.browse ? "" : st === "s-hit" ? `<em class="xt t-ok">你选</em>` : st === "s-bad" ? `<em class="xt t-bad">你选</em>` : st === "s-miss" ? `<em class="xt t-miss">漏选</em>` : "";
       const mark = ok ? `<span class="xm ok" aria-label="正确">✓</span>` : `<span class="xm no" aria-label="错误">✕</span>`;
       return `<div class="xi ${st}">${mark}<div class="xb"><p class="xo"><span class="xl">${letters[k]}</span>${q.o[o]}${tag}</p><p class="xe">${txt}</p></div></div>`;
     }).join("")}</div>` : `<p><b>解析：</b>${q.e}</p>`;
