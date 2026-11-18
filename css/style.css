@@ -833,3 +833,6 @@ button.cp-card:hover{box-shadow:0 0 0 1.5px var(--accent);color:var(--accent)}
 .pk-foot{display:flex;justify-content:flex-end;margin-top:4px}
 .pk-foot .link{font-size:13px}
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .cp-card.on{background:#1b2a45}}
+/* 新版本提示 */
+.update-bar{position:fixed;left:50%;top:12px;transform:translateX(-50%);z-index:1000;border:0;cursor:pointer;background:var(--accent);color:#fff;font:600 13.5px/1 inherit;padding:11px 18px;border-radius:999px;box-shadow:0 8px 24px -6px rgba(10,92,230,.5)}
+.update-bar::before{content:"↻ "}

@@ -10,3 +10,4 @@ scripts/deploy.env
 auth/data/
 auth/initial-admin.txt
 auth/users.json.tmp
+version.txt

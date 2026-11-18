@@ -171,3 +171,24 @@
 
   boot();
 })();
+
+// ===== 新版本提示：发布时会写入 version.txt，页面定期检查，有更新就提示刷新 =====
+(function () {
+  if (location.protocol === "file:") return;
+  let base = null, shown = false;
+  const check = () => fetch("version.txt", { cache: "no-store", credentials: "same-origin" })
+    .then((r) => (r.ok ? r.text() : null)).then((v) => {
+      v = v && v.trim(); if (!v || !/^\d+$/.test(v)) return;
+      if (base === null) { base = v; return; }
+      if (v !== base && !shown) {
+        shown = true;
+        const bar = document.createElement("button");
+        bar.type = "button"; bar.className = "update-bar"; bar.textContent = "题库和卡片有新版本，点击刷新";
+        bar.onclick = () => location.reload();
+        document.body.appendChild(bar);
+      }
+    }).catch(() => {});
+  check();
+  setInterval(check, 5 * 60 * 1000);
+  document.addEventListener("visibilitychange", () => { if (!document.hidden) check(); });
+})();

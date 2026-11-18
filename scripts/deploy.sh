@@ -17,5 +17,6 @@ fi
 
 python3 scripts/build.py            # 先用 data/ 重新生成题库并校验
 rsync -az --delete --exclude ".DS_Store" -e "$RSH" index.html css js assets "$DEPLOY_SERVER:$DEPLOY_DEST/"
-"${SSH_CMD[@]}" "$DEPLOY_SERVER" "chown -R www-data:www-data $DEPLOY_DEST"
+# 写入版本号：页面会定期检查，发现新版本时提示刷新
+"${SSH_CMD[@]}" "$DEPLOY_SERVER" "date +%s > $DEPLOY_DEST/version.txt && chown -R www-data:www-data $DEPLOY_DEST"
 echo "已发布：${SITE_URL:-$DEPLOY_DEST}"
