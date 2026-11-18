@@ -199,6 +199,23 @@
     return links.map(([href, label, title]) => `<a class="src-a" href="${href}" target="_blank" rel="noopener" title="打开原文：${esc(title)}">${ic("book")}<span>${esc(label)}</span></a>`).join("");
   }
 
+  // 课程原图：来自飞书课程文档，点击放大
+  function imgHtml(g) {
+    return (g.img || []).map((im) => `<figure class="cb-img"><button type="button" class="ci-btn" data-zoom="${esc(im.f)}" aria-label="放大查看课程原图">
+      <img src="${esc(im.f)}" alt="${esc(im.c)}" loading="lazy"></button>
+      <figcaption><span class="ci-tag">${ic("file")}课程原图</span>${esc(im.c)}</figcaption></figure>`).join("");
+  }
+  document.addEventListener("click", (e) => {
+    const b = e.target.closest("[data-zoom]"); if (!b) return;
+    e.stopPropagation();
+    const ov = document.createElement("div");
+    ov.className = "img-zoom"; ov.innerHTML = `<img src="${b.dataset.zoom}" alt=""><span>点击任意处或按 Esc 关闭</span>`;
+    const close = () => { ov.remove(); document.removeEventListener("keydown", onKey, true); };
+    const onKey = (ev) => { if (ev.key === "Escape") { ev.preventDefault(); ev.stopPropagation(); close(); } };
+    ov.onclick = close; document.addEventListener("keydown", onKey, true);
+    document.body.appendChild(ov);
+  }, true);
+
   function backHtml(g) {
     const rel = related(g);
     const more = [
@@ -212,6 +229,7 @@
       ${(g.words || []).length ? `<dl class="cb-words">${g.words.map((w) => `<div><dt>${esc(w.w)}</dt><dd>${hl(w.e)}</dd></div>`).join("")}</dl>` : ""}
       ${whereHtml(g)}
       ${visualHtml(g.visual, g)}
+      ${imgHtml(g)}
       ${(g.keys || []).length ? `<div class="cb-keys"><span class="ck-h">${ic("target")}关键参数</span><div class="ck-list">${g.keys.map((k) => `<div class="ck"><b>${esc(k.v)}</b><span>${esc(k.k)}</span></div>`).join("")}</div></div>` : ""}
       ${g.trap ? `<p class="cb-trap">${ic("alert")}<span class="ct-h">易错</span><span>${hl(g.trap)}</span></p>` : ""}
       ${g.mnemonic ? `<p class="cb-mn"><span>口诀</span>${esc(g.mnemonic)}</p>` : ""}
@@ -261,7 +279,7 @@
       <p class="cv-keys">快捷键：空格翻面　← 不认识　→ 认识了</p>`;
     // 正面：点哪里都翻面；背面：只有点标题行才翻回去，点「展开详细说明」、图解、文字都不翻面
     $("#flash").onclick = (e) => {
-      if (e.target.closest(".cb-rel, .cb-more, .cb-where, .cw-pop, a, button")) return;
+      if (e.target.closest(".cb-rel, .cb-more, .cb-where, .cw-pop, .cb-img, a, button")) return;
       if (flipped && !e.target.closest(".cb-head")) return;
       if (String(window.getSelection && window.getSelection()) !== "") return; // 正在选中文字时不翻面
       flipped = !flipped; renderCard();

@@ -285,7 +285,13 @@
     "e": "直译「增量」，课程借指执行侧：把判断做出来"
    }
   ],
-  "trap": "✗ AI 让 Echo 变便宜 → ✓ AI 让 Delta 便宜、Echo 稀缺"
+  "trap": "✗ AI 让 Echo 变便宜 → ✓ AI 让 Delta 便宜、Echo 稀缺",
+  "img": [
+   {
+    "f": "assets/course/echo_delta_model.webp",
+    "c": "Echo / Delta 能力模型"
+   }
+  ]
  },
  {
   "term": "最硬判据：现场投入持续下降",
@@ -492,7 +498,13 @@
     "e": "提示词：写给大模型的指令"
    }
   ],
-  "trap": "✗ 三步线性走完 → ✓ 是闭环；Skill 模板属组装方案"
+  "trap": "✗ 三步线性走完 → ✓ 是闭环；Skill 模板属组装方案",
+  "img": [
+   {
+    "f": "assets/course/fde_three_step_loop.webp",
+    "c": "FDE 三步闭环"
+   }
+  ]
  },
  {
   "term": "评测证据与冻结样本集",

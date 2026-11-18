@@ -67,7 +67,13 @@
     "e": "AI 要跟客户现有系统连起来、互相读写数据"
    }
   ],
-  "trap": "✗ 只看「业务人员用」就选 WorkBuddy → ✓ 三维交叉看"
+  "trap": "✗ 只看「业务人员用」就选 WorkBuddy → ✓ 三维交叉看",
+  "img": [
+   {
+    "f": "assets/course/tool_matrix_position_map.webp",
+    "c": "腾讯云几款主要的AI产品定位"
+   }
+  ]
  },
  {
   "term": "WorkBuddy",
@@ -325,7 +331,13 @@
     "e": "打通腾讯文档、网盘、乐享，提供业务内容"
    }
   ],
-  "trap": "✗ 连接器替换原有系统 → ✓ 只接入不替换"
+  "trap": "✗ 连接器替换原有系统 → ✓ 只接入不替换",
+  "img": [
+   {
+    "f": "assets/course/four_capability_assets.webp",
+    "c": "四类能力资产：Skill 描述怎么做 · 连接器决定能接入哪些系统 · 资料库决定能调用什么专业内容 · 专家把三者打包成一个可直接调用的角色。"
+   }
+  ]
  },
  {
   "term": "客户落地的四层门槛",
@@ -419,7 +431,13 @@
     "e": "把原型调稳，做到可复用、可扩展"
    }
   ],
-  "trap": "✗ 直接从第 3 层搭建开始 → ✓ 客户多卡在第 1、2 层"
+  "trap": "✗ 直接从第 3 层搭建开始 → ✓ 客户多卡在第 1、2 层",
+  "img": [
+   {
+    "f": "assets/course/four_layer_gates.webp",
+    "c": "客户落地四层门槛"
+   }
+  ]
  },
  {
   "term": "三层赋能体系",
@@ -493,7 +511,13 @@
     "e": "偏工程执行的工作：写代码、配系统、调接口"
    }
   ],
-  "trap": "✗ WorkBuddy 属平台层 → ✓ 工具层；ADP、连接器在平台层"
+  "trap": "✗ WorkBuddy 属平台层 → ✓ 工具层；ADP、连接器在平台层",
+  "img": [
+   {
+    "f": "assets/course/tool_matrix_position_map.webp",
+    "c": "腾讯云几款主要的AI产品定位"
+   }
+  ]
  },
  {
   "term": "ADP",

@@ -81,7 +81,13 @@
    ],
    "at": 2,
    "label": "策略步·权限判定"
-  }
+  },
+  "img": [
+   {
+    "f": "assets/course/permission_priority_flow.webp",
+    "c": "权限判断优先级流程：黑名单 > 白名单 > 默认允许"
+   }
+  ]
  },
  {
   "term": "三个端：客户端 / 企业管理后台 / WMA",
@@ -158,7 +164,13 @@
     "e": "智能体：定义好做什么、用什么工具和知识库的 AI"
    }
   ],
-  "trap": "放客户端还是 WMA 只看触发方式：人手动＝客户端"
+  "trap": "放客户端还是 WMA 只看触发方式：人手动＝客户端",
+  "img": [
+   {
+    "f": "assets/course/workbuddy_three_tier.webp",
+    "c": "WorkBuddy 三端架构：客户端（桌面/Web/小程序/移动端）负责用户交互，企业管理后台负责平台治理（用户管理/技能审核/积分管理/数据看板），WMA 负责助手级精细化配置（身份人设/能力挂载/行为约束/交互策略）。"
+   }
+  ]
  },
  {
   "term": "企业版三档部署形态",
@@ -403,7 +415,13 @@
     "e": "一次生产：Agent 从开始到结束跑一次，上下文独立"
    }
   ],
-  "trap": "✗ WMA＝Agent 或 Runtime → ✓ WMA 是工厂运营方"
+  "trap": "✗ WMA＝Agent 或 Runtime → ✓ WMA 是工厂运营方",
+  "img": [
+   {
+    "f": "assets/course/agent_runtime_session.webp",
+    "c": "Agent / Runtime / Session 关系：1 个 Agent 可创建 N 个 Runtime，1 个 Runtime 可包含 N 个 Session，Session 彼此独立、上下文隔离。"
+   }
+  ]
  },
  {
   "term": "能力下发四步",
@@ -479,7 +497,13 @@
     "e": "后台配置的 Agent，含 Prompt、工具、知识库"
    }
   ],
-  "trap": "专家只「保存」为草稿不会下发，须「保存并启用」"
+  "trap": "专家只「保存」为草稿不会下发，须「保存并启用」",
+  "img": [
+   {
+    "f": "assets/course/capability_delivery_chain.webp",
+    "c": "能力下发四步链路：上传（导入 Skill、专家、知识库）→ 分类（打标签、分组）→ 策略（黑名单、白名单、默认允许）→ 到人（成员客户端可见可用）——四步缺一不可，策略配置是最容易出问题的一步。"
+   }
+  ]
  },
  {
   "term": "企业自定义知识库",

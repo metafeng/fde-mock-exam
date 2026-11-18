@@ -293,6 +293,12 @@ window.GLOSSARY = [
 }
 ],
 "trap": "✗ AI 让 Echo 变便宜 → ✓ AI 让 Delta 便宜、Echo 稀缺",
+"img": [
+{
+"f": "assets/course/echo_delta_model.webp",
+"c": "Echo / Delta 能力模型"
+}
+],
 "m": 0,
 "rank": 3
 },
@@ -506,6 +512,12 @@ window.GLOSSARY = [
 }
 ],
 "trap": "✗ 三步线性走完 → ✓ 是闭环；Skill 模板属组装方案",
+"img": [
+{
+"f": "assets/course/fde_three_step_loop.webp",
+"c": "FDE 三步闭环"
+}
+],
 "m": 0,
 "rank": 6
 },
@@ -1135,6 +1147,12 @@ window.GLOSSARY = [
 }
 ],
 "trap": "✗ 只看「业务人员用」就选 WorkBuddy → ✓ 三维交叉看",
+"img": [
+{
+"f": "assets/course/tool_matrix_position_map.webp",
+"c": "腾讯云几款主要的AI产品定位"
+}
+],
 "m": 1,
 "rank": 0
 },
@@ -1399,6 +1417,12 @@ window.GLOSSARY = [
 }
 ],
 "trap": "✗ 连接器替换原有系统 → ✓ 只接入不替换",
+"img": [
+{
+"f": "assets/course/four_capability_assets.webp",
+"c": "四类能力资产：Skill 描述怎么做 · 连接器决定能接入哪些系统 · 资料库决定能调用什么专业内容 · 专家把三者打包成一个可直接调用的角色。"
+}
+],
 "m": 1,
 "rank": 3
 },
@@ -1495,6 +1519,12 @@ window.GLOSSARY = [
 }
 ],
 "trap": "✗ 直接从第 3 层搭建开始 → ✓ 客户多卡在第 1、2 层",
+"img": [
+{
+"f": "assets/course/four_layer_gates.webp",
+"c": "客户落地四层门槛"
+}
+],
 "m": 1,
 "rank": 4
 },
@@ -1571,6 +1601,12 @@ window.GLOSSARY = [
 }
 ],
 "trap": "✗ WorkBuddy 属平台层 → ✓ 工具层；ADP、连接器在平台层",
+"img": [
+{
+"f": "assets/course/tool_matrix_position_map.webp",
+"c": "腾讯云几款主要的AI产品定位"
+}
+],
 "m": 1,
 "rank": 5
 },
@@ -2277,6 +2313,12 @@ window.GLOSSARY = [
 }
 ],
 "trap": "「不得自创类别」是约束定界，不是指令或示例",
+"img": [
+{
+"f": "assets/course/prompt_five_components.webp",
+"c": "Prompt 五要素：角色（定调）· 指令（定事）· 约束（定界）· 示例（定标）· 输出格式（定形）——把任意需求拆成五个要素写进 Prompt，输出的稳定性与可复用性由结构化程度决定。"
+}
+],
 "m": 2,
 "rank": 0
 },
@@ -2364,6 +2406,12 @@ window.GLOSSARY = [
 }
 ],
 "trap": "Demo 上量就崩多因缺错误处理，不是缺护栏/可观测",
+"img": [
+{
+"f": "assets/course/harness_five_components.webp",
+"c": "Harness 五件套：模型是发动机，五件套是整辆车"
+}
+],
 "m": 2,
 "rank": 1
 },
@@ -2615,6 +2663,12 @@ window.GLOSSARY = [
 }
 ],
 "trap": "查结果定继续/修正/停是反思；读工具返回结果是感知",
+"img": [
+{
+"f": "assets/course/agent_loop_cycle.webp",
+"c": "Agent Loop 四环节循环：感知（Observe）→ 规划（Plan）→ 行动（Act）→ 反思（Reflect）——循环往复，直至满足退出条件。"
+}
+],
 "m": 2,
 "rank": 4
 },
@@ -3736,6 +3790,12 @@ window.GLOSSARY = [
 }
 ],
 "trap": "同时命中以黑名单为准；内置市场专家不受策略约束",
+"img": [
+{
+"f": "assets/course/permission_priority_flow.webp",
+"c": "权限判断优先级流程：黑名单 > 白名单 > 默认允许"
+}
+],
 "m": 3,
 "rank": 4
 },
@@ -4074,6 +4134,12 @@ window.GLOSSARY = [
 }
 ],
 "trap": "给客户看成果→产物面板；排查技能调用→任务执行区",
+"img": [
+{
+"f": "assets/course/workbuddy_ui_five_areas.webp",
+"c": "WorkBuddy 客户端界面五区域：功能区（左侧导航：新建任务、创建、专家-技能-连接器、优化、更多、资料库）、任务区（历史任务与工作空间）、任务执行区（技能调用与结果展示）、对话区域（自然语言指令输入）与产物面板（交付物实时预览）——上手第一步就是认全这五个区域。"
+}
+],
 "m": 3,
 "rank": 8
 },
@@ -4560,6 +4626,12 @@ window.GLOSSARY = [
 "at": 2,
 "label": "策略步·权限判定"
 },
+"img": [
+{
+"f": "assets/course/permission_priority_flow.webp",
+"c": "权限判断优先级流程：黑名单 > 白名单 > 默认允许"
+}
+],
 "m": 4,
 "rank": 0
 },
@@ -4639,6 +4711,12 @@ window.GLOSSARY = [
 }
 ],
 "trap": "放客户端还是 WMA 只看触发方式：人手动＝客户端",
+"img": [
+{
+"f": "assets/course/workbuddy_three_tier.webp",
+"c": "WorkBuddy 三端架构：客户端（桌面/Web/小程序/移动端）负责用户交互，企业管理后台负责平台治理（用户管理/技能审核/积分管理/数据看板），WMA 负责助手级精细化配置（身份人设/能力挂载/行为约束/交互策略）。"
+}
+],
 "m": 4,
 "rank": 1
 },
@@ -4890,6 +4968,12 @@ window.GLOSSARY = [
 }
 ],
 "trap": "✗ WMA＝Agent 或 Runtime → ✓ WMA 是工厂运营方",
+"img": [
+{
+"f": "assets/course/agent_runtime_session.webp",
+"c": "Agent / Runtime / Session 关系：1 个 Agent 可创建 N 个 Runtime，1 个 Runtime 可包含 N 个 Session，Session 彼此独立、上下文隔离。"
+}
+],
 "m": 4,
 "rank": 4
 },
@@ -4968,6 +5052,12 @@ window.GLOSSARY = [
 }
 ],
 "trap": "专家只「保存」为草稿不会下发，须「保存并启用」",
+"img": [
+{
+"f": "assets/course/capability_delivery_chain.webp",
+"c": "能力下发四步链路：上传（导入 Skill、专家、知识库）→ 分类（打标签、分组）→ 策略（黑名单、白名单、默认允许）→ 到人（成员客户端可见可用）——四步缺一不可，策略配置是最容易出问题的一步。"
+}
+],
 "m": 4,
 "rank": 5
 },
@@ -5731,6 +5821,12 @@ window.GLOSSARY = [
 "label": "进场访谈核心框架"
 },
 "trap": "✗ 先问预算、选模型 → ✓ 哪步坏→谁在用→啥算成",
+"img": [
+{
+"f": "assets/course/requirement_three_layers.webp",
+"c": "三层下挖法"
+}
+],
 "m": 5,
 "rank": 0
 },
@@ -5818,6 +5914,12 @@ window.GLOSSARY = [
 "label": "破抵触核心方法"
 },
 "trap": "第三步「对一线有用」最关键；减背锅≠把责任转给AI",
+"img": [
+{
+"f": "assets/course/resistance_three_steps.webp",
+"c": "破解一线抵触的三步法"
+}
+],
 "m": 5,
 "rank": 1
 },
@@ -5906,6 +6008,12 @@ window.GLOSSARY = [
 "label": "最后一步：先做哪个"
 },
 "trap": "✗ 技术可行性优先 → ✓ 先四维筛值不值，再两维排序",
+"img": [
+{
+"f": "assets/course/scenario_scoring_card.webp",
+"c": "三个候选场景的六维打分"
+}
+],
 "m": 5,
 "rank": 2
 },
@@ -5993,6 +6101,12 @@ window.GLOSSARY = [
 "label": "访谈后往深挖"
 },
 "trap": "✗ 把 SOP 文档直接灌进知识库 → ✓ 跟一线走一遍",
+"img": [
+{
+"f": "assets/course/hidden_process_comparison.webp",
+"c": "显性 SOP 与真实流程对比"
+}
+],
 "m": 5,
 "rank": 3
 },
@@ -6885,6 +6999,12 @@ window.GLOSSARY = [
 }
 ],
 "trap": "E→V要关键指标达阈值80%；FDE自测不算实证",
+"img": [
+{
+"f": "assets/course/pev_loop.webp",
+"c": "PEV 交付闭环"
+}
+],
 "m": 6,
 "rank": 0
 },
@@ -6966,6 +7086,12 @@ window.GLOSSARY = [
 }
 ],
 "trap": "阈值进场第一周定死，不等V阶段；FDE不能单方改",
+"img": [
+{
+"f": "assets/course/acceptance_four_dimensions.webp",
+"c": "四维验收框架"
+}
+],
 "m": 6,
 "rank": 1
 },
@@ -7147,6 +7273,12 @@ window.GLOSSARY = [
 }
 ],
 "trap": "PEV管单项目节奏，L0–L4是位置标尺；L4非必到",
+"img": [
+{
+"f": "assets/course/l0_l4_maturity.webp",
+"c": "L0–L4 成熟度框架"
+}
+],
 "m": 6,
 "rank": 3
 },
@@ -7227,6 +7359,12 @@ window.GLOSSARY = [
 "at": 1,
 "label": "L1→L2 之间"
 },
+"img": [
+{
+"f": "assets/course/l0_l4_maturity.webp",
+"c": "L0–L4 成熟度框架"
+}
+],
 "m": 6,
 "rank": 4
 },
@@ -7700,6 +7838,12 @@ window.GLOSSARY = [
 }
 ],
 "trap": "Consolidate不可省；Expand后必须复测老场景",
+"img": [
+{
+"f": "assets/course/land_expand_stages.webp",
+"c": "Land and Expand 四阶段"
+}
+],
 "m": 6,
 "rank": 10
 },
@@ -7932,6 +8076,12 @@ window.GLOSSARY = [
 }
 ],
 "trap": "✗接口实证可信度最高 → ✓知识库实证最高；推断须单列",
+"img": [
+{
+"f": "assets/course/evidence_three_states.webp",
+"c": "三态溯源"
+}
+],
 "m": 7,
 "rank": 0
 },
@@ -8093,6 +8243,12 @@ window.GLOSSARY = [
 }
 ],
 "trap": "✗首单3×更划算 → ✓价值从第二单兑现；第四单超6×是假沉淀",
+"img": [
+{
+"f": "assets/course/cost_curve_comparison.webp",
+"c": "成本曲线对比：项目制 vs 本体化"
+}
+],
 "m": 7,
 "rank": 2
 },
@@ -8422,6 +8578,12 @@ window.GLOSSARY = [
 }
 ],
 "trap": "✗踩坑库按客户隔离 → ✓按客户隔离的是资料库",
+"img": [
+{
+"f": "assets/course/asset_carriers_three.webp",
+"c": "沉淀载体三件套"
+}
+],
 "m": 7,
 "rank": 6
 },
@@ -8590,6 +8752,12 @@ window.GLOSSARY = [
 }
 ],
 "trap": "顺序固定识别→剥离→封装→验证；特例做参数不写死",
+"img": [
+{
+"f": "assets/course/skill_two_layers.webp",
+"c": "Skill 封装的两层结构"
+}
+],
 "m": 7,
 "rank": 8
 },
@@ -8795,6 +8963,12 @@ window.GLOSSARY = [
 }
 ],
 "trap": "读者别对调；只面向产品→客户离不开你，只面向客户→团队无积累",
+"img": [
+{
+"f": "assets/course/distillation_two_directions.webp",
+"c": "双向蒸馏的两个方向"
+}
+],
 "m": 7,
 "rank": 11
 },
@@ -9099,6 +9273,12 @@ window.GLOSSARY = [
 }
 ],
 "trap": "四阶段顺序刚性；评审技能+知识库是管理期主力",
+"img": [
+{
+"f": "assets/course/twelve_week_timeline.webp",
+"c": "12 周节奏：四阶段 + 四道 Gate"
+}
+],
 "m": 8,
 "rank": 1
 },
@@ -9180,6 +9360,12 @@ window.GLOSSARY = [
 }
 ],
 "trap": "✗砍掉立项期/按6个Sprint跑 → ✓比例不变、可叠不可跳",
+"img": [
+{
+"f": "assets/course/twelve_week_timeline.webp",
+"c": "12 周节奏：四阶段 + 四道 Gate"
+}
+],
 "m": 8,
 "rank": 2
 },
@@ -9261,6 +9447,12 @@ window.GLOSSARY = [
 }
 ],
 "trap": "三维度全 Go 才放行，没有多数通过；终审由人做",
+"img": [
+{
+"f": "assets/course/twelve_week_timeline.webp",
+"c": "12 周节奏：四阶段 + 四道 Gate"
+}
+],
 "m": 8,
 "rank": 3
 },
@@ -10197,6 +10389,12 @@ window.GLOSSARY = [
 }
 ],
 "trap": "答辩顺序是数据→能力→过程；任一层「基本还行」都不算过",
+"img": [
+{
+"f": "assets/course/constraint_three_layers.webp",
+"c": "约束三层模型"
+}
+],
 "m": 9,
 "rank": 0
 },
@@ -10286,6 +10484,12 @@ window.GLOSSARY = [
 }
 ],
 "trap": "✗工具护栏在执行后 → ✓Agent 决定调工具后、执行前",
+"img": [
+{
+"f": "assets/course/guardrails_three_types.webp",
+"c": "三类护栏"
+}
+],
 "m": 9,
 "rank": 1
 },
@@ -10463,6 +10667,12 @@ window.GLOSSARY = [
 "label": "能力层·审批链路"
 },
 "trap": "分级看「可逆性×影响面」，不是调用频率；不靠事后回滚",
+"img": [
+{
+"f": "assets/course/approval_risk_matrix.webp",
+"c": "动作分级：可逆性 × 影响面"
+}
+],
 "m": 9,
 "rank": 3
 },

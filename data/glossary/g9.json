@@ -77,7 +77,13 @@
     "e": "Identity and Access Management，身份与权限管理"
    }
   ],
-  "trap": "答辩顺序是数据→能力→过程；任一层「基本还行」都不算过"
+  "trap": "答辩顺序是数据→能力→过程；任一层「基本还行」都不算过",
+  "img": [
+   {
+    "f": "assets/course/constraint_three_layers.webp",
+    "c": "约束三层模型"
+   }
+  ]
  },
  {
   "term": "三类护栏",
@@ -164,7 +170,13 @@
     "e": "Model Context Protocol，连接 AI 模型和外部工具的协议"
    }
   ],
-  "trap": "✗工具护栏在执行后 → ✓Agent 决定调工具后、执行前"
+  "trap": "✗工具护栏在执行后 → ✓Agent 决定调工具后、执行前",
+  "img": [
+   {
+    "f": "assets/course/guardrails_three_types.webp",
+    "c": "三类护栏"
+   }
+  ]
  },
  {
   "term": "最小必要权限",
@@ -337,7 +349,13 @@
    "at": 1,
    "label": "能力层·审批链路"
   },
-  "trap": "分级看「可逆性×影响面」，不是调用频率；不靠事后回滚"
+  "trap": "分级看「可逆性×影响面」，不是调用频率；不靠事后回滚",
+  "img": [
+   {
+    "f": "assets/course/approval_risk_matrix.webp",
+    "c": "动作分级：可逆性 × 影响面"
+   }
+  ]
  },
  {
   "term": "三段式日志",

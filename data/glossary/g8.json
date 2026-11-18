@@ -163,7 +163,13 @@
     "e": "Product Requirements Document，产品需求文档"
    }
   ],
-  "trap": "四阶段顺序刚性；评审技能+知识库是管理期主力"
+  "trap": "四阶段顺序刚性；评审技能+知识库是管理期主力",
+  "img": [
+   {
+    "f": "assets/course/twelve_week_timeline.webp",
+    "c": "12 周节奏：四阶段 + 四道 Gate"
+   }
+  ]
  },
  {
   "term": "12 周基准节奏",
@@ -242,7 +248,13 @@
     "e": "冲刺：每两周交付一个可用软件增量的开发节奏"
    }
   ],
-  "trap": "✗砍掉立项期/按6个Sprint跑 → ✓比例不变、可叠不可跳"
+  "trap": "✗砍掉立项期/按6个Sprint跑 → ✓比例不变、可叠不可跳",
+  "img": [
+   {
+    "f": "assets/course/twelve_week_timeline.webp",
+    "c": "12 周节奏：四阶段 + 四道 Gate"
+   }
+  ]
  },
  {
   "term": "四道 Gate",
@@ -321,7 +333,13 @@
     "e": "放行 / 不放行：每道 Gate 评审的两种结论"
    }
   ],
-  "trap": "三维度全 Go 才放行，没有多数通过；终审由人做"
+  "trap": "三维度全 Go 才放行，没有多数通过；终审由人做",
+  "img": [
+   {
+    "f": "assets/course/twelve_week_timeline.webp",
+    "c": "12 周节奏：四阶段 + 四道 Gate"
+   }
+  ]
  },
  {
   "term": "Gate 1：立项卡定稿",

@@ -86,7 +86,13 @@
    "at": 0,
    "label": "进场访谈核心框架"
   },
-  "trap": "✗ 先问预算、选模型 → ✓ 哪步坏→谁在用→啥算成"
+  "trap": "✗ 先问预算、选模型 → ✓ 哪步坏→谁在用→啥算成",
+  "img": [
+   {
+    "f": "assets/course/requirement_three_layers.webp",
+    "c": "三层下挖法"
+   }
+  ]
  },
  {
   "term": "破解一线抵触三步法",
@@ -171,7 +177,13 @@
    "at": 3,
    "label": "破抵触核心方法"
   },
-  "trap": "第三步「对一线有用」最关键；减背锅≠把责任转给AI"
+  "trap": "第三步「对一线有用」最关键；减背锅≠把责任转给AI",
+  "img": [
+   {
+    "f": "assets/course/resistance_three_steps.webp",
+    "c": "破解一线抵触的三步法"
+   }
+  ]
  },
  {
   "term": "场景优先级六维",
@@ -257,7 +269,13 @@
    "at": 4,
    "label": "最后一步：先做哪个"
   },
-  "trap": "✗ 技术可行性优先 → ✓ 先四维筛值不值，再两维排序"
+  "trap": "✗ 技术可行性优先 → ✓ 先四维筛值不值，再两维排序",
+  "img": [
+   {
+    "f": "assets/course/scenario_scoring_card.webp",
+    "c": "三个候选场景的六维打分"
+   }
+  ]
  },
  {
   "term": "隐性流程",
@@ -342,7 +360,13 @@
    "at": 1,
    "label": "访谈后往深挖"
   },
-  "trap": "✗ 把 SOP 文档直接灌进知识库 → ✓ 跟一线走一遍"
+  "trap": "✗ 把 SOP 文档直接灌进知识库 → ✓ 跟一线走一遍",
+  "img": [
+   {
+    "f": "assets/course/hidden_process_comparison.webp",
+    "c": "显性 SOP 与真实流程对比"
+   }
+  ]
  },
  {
   "term": "Demo 三层次",

@@ -76,7 +76,13 @@
     "e": "接真实数据和真实用户，跑出有统计意义的结果"
    }
   ],
-  "trap": "E→V要关键指标达阈值80%；FDE自测不算实证"
+  "trap": "E→V要关键指标达阈值80%；FDE自测不算实证",
+  "img": [
+   {
+    "f": "assets/course/pev_loop.webp",
+    "c": "PEV 交付闭环"
+   }
+  ]
  },
  {
   "term": "四维验收框架",
@@ -155,7 +161,13 @@
     "e": "用户真的在用：看周活跃、使用深度和留存"
    }
   ],
-  "trap": "阈值进场第一周定死，不等V阶段；FDE不能单方改"
+  "trap": "阈值进场第一周定死，不等V阶段；FDE不能单方改",
+  "img": [
+   {
+    "f": "assets/course/acceptance_four_dimensions.webp",
+    "c": "四维验收框架"
+   }
+  ]
  },
  {
   "term": "合规三条兜底条款",
@@ -332,7 +344,13 @@
     "e": "项目整体走到哪一级的位置标尺"
    }
   ],
-  "trap": "PEV管单项目节奏，L0–L4是位置标尺；L4非必到"
+  "trap": "PEV管单项目节奏，L0–L4是位置标尺；L4非必到",
+  "img": [
+   {
+    "f": "assets/course/l0_l4_maturity.webp",
+    "c": "L0–L4 成熟度框架"
+   }
+  ]
  },
  {
   "term": "死亡谷",
@@ -410,7 +428,13 @@
    ],
    "at": 1,
    "label": "L1→L2 之间"
-  }
+  },
+  "img": [
+   {
+    "f": "assets/course/l0_l4_maturity.webp",
+    "c": "L0–L4 成熟度框架"
+   }
+  ]
  },
  {
   "term": "止损决策",
@@ -871,7 +895,13 @@
     "e": "规模化：扩到更多团队，要当新项目做"
    }
   ],
-  "trap": "Consolidate不可省；Expand后必须复测老场景"
+  "trap": "Consolidate不可省；Expand后必须复测老场景",
+  "img": [
+   {
+    "f": "assets/course/land_expand_stages.webp",
+    "c": "Land and Expand 四阶段"
+   }
+  ]
  },
  {
   "term": "霍桑效应",
