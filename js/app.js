@@ -165,10 +165,9 @@ function feedbackHtml(n, cls) {
       const txt = String(q.x[o]).replace(/^(正确|错误)[：:]\s*/, "");
       // 四种状态：答对（选了正确项）/ 错选（选了错误项）/ 漏选（正确项没选）/ 其他错误项
       const st = S.browse ? (ok ? "s-right" : "s-other") : ok ? (picked ? "s-hit" : "s-miss") : (picked ? "s-bad" : "s-other");
-      const tag = S.browse ? "" : st === "s-hit" ? `<em class="xt t-ok">你选</em>` : st === "s-bad" ? `<em class="xt t-bad">你选</em>` : st === "s-miss" ? `<em class="xt t-miss">漏选</em>` : "";
       // 选项原文上方已经显示，这里只用「字母 + ✓/✕」徽标对应，解析文字是主角
       const plain = String(q.o[o]).replace(/<[^>]+>/g, "").replace(/"/g, "&quot;");
-      return `<div class="xi ${st}"><span class="xbadge ${ok ? "ok" : "no"}" title="${letters[k]}. ${plain}">${letters[k]}<i>${ok ? "✓" : "✕"}</i></span><p class="xe">${txt}</p>${tag}</div>`;
+      return `<div class="xi ${st}"><span class="xbadge ${ok ? "ok" : "no"}" title="${letters[k]}. ${plain}">${letters[k]}<i>${ok ? "✓" : "✕"}</i></span><p class="xe">${txt}</p></div>`;
     }).join("")}</div>` : `<p><b>解析：</b>${q.e}</p>`;
   const head = S.browse
     ? `正确答案 ${rightL}`
