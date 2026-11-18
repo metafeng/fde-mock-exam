@@ -746,3 +746,20 @@ mark.kv{background:linear-gradient(transparent 55%,#ffe58a 55%);color:inherit;fo
 .cr-empty{padding:14px;text-align:center;font-size:13px;color:var(--muted)}
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .cv-res mark{background:#6b5310}}
 @media (max-width:820px){.cv-search kbd{display:none}.cv-res{max-height:55vh}}
+/* 搜索框 v2：小巧，放在标题行右侧 */
+.cv-head{position:relative}
+.cv-search{position:absolute;top:22px;right:22px;width:200px;height:32px;margin:0;padding:0 10px;gap:6px;border-radius:9px;font-size:13px}
+.cv-search > .ic{width:14px;height:14px}
+.cv-search input{font-size:13px}
+.cv-search kbd{font-size:10px;padding:2px 5px}
+.cv-search:focus-within{width:260px;box-shadow:0 0 0 3px rgba(10,92,230,.1)}
+.cv-res{left:auto;width:380px;max-width:calc(100vw - 32px)}
+@media (max-width:820px){
+  .cv-search,.cv-search:focus-within{position:relative;top:auto;right:auto;width:auto;height:34px;margin:10px 0 2px}
+  .cv-res{left:0;right:0;width:auto}
+}
+@media (max-width:820px){
+  .cv-search{position:absolute;top:16px;right:14px;width:118px;height:32px;margin:0;z-index:5}
+  .cv-search:focus-within{position:absolute;top:16px;right:14px;width:calc(100% - 28px);height:32px;margin:0}
+  .cv-search input::placeholder{font-size:12.5px}
+}
