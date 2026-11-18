@@ -922,3 +922,31 @@ button.cp-card:hover{box-shadow:0 0 0 1.5px var(--accent);color:var(--accent)}
   .cl-mn{display:none}
   .cl-body{padding:0 0 14px}
 }
+/* 逐项解析 v2：✓ / ✕ 图标 + 四种状态 */
+.feedback .verdict{display:flex;align-items:center;gap:8px;padding:10px 12px;border-radius:10px;margin:-2px 0 8px}
+.feedback.r .verdict{background:var(--ok-soft)} .feedback.w .verdict{background:var(--bad-soft)}
+.vd-ic{flex:none;display:inline-grid;place-items:center;width:22px;height:22px;border-radius:50%;color:#fff;font-size:13px;font-weight:800}
+.feedback.r .vd-ic{background:var(--ok)} .feedback.w .vd-ic{background:var(--bad)}
+.xlist{gap:8px}
+.xi{gap:12px;align-items:flex-start;border:1.5px solid transparent;border-left:1.5px solid transparent;border-radius:10px;padding:10px 12px;background:var(--panel)}
+.xm{flex:none;display:inline-grid;place-items:center;width:24px;height:24px;border-radius:50%;font-size:14px;font-weight:800;line-height:1;margin-top:1px}
+.xm.ok{background:var(--ok);color:#fff}
+.xm.no{background:var(--bad-soft);color:var(--bad)}
+.xb{flex:1;min-width:0}
+.xl{display:inline-block;min-width:16px;font-weight:700;color:var(--muted);margin-right:6px}
+.xo{font-size:13.5px;line-height:1.55}
+.xe{font-size:12.5px;line-height:1.6;color:var(--ink-2)}
+.xt{display:inline-block;font-size:11px;font-weight:700;margin-left:8px;padding:1px 7px;border-radius:999px;vertical-align:1px}
+.t-ok{color:#fff;background:var(--ok)} .t-bad{color:#fff;background:var(--bad)} .t-miss{color:var(--mark);background:var(--mark-soft)}
+/* 答对：选了正确项 */
+.xi.s-hit,.xi.s-right{background:var(--ok-soft);border-color:var(--ok)}
+.xi.s-hit .xo,.xi.s-right .xo{font-weight:600}
+/* 错选：选了错误项 */
+.xi.s-bad{background:var(--bad-soft);border-color:var(--bad)}
+.xi.s-bad .xm.no{background:var(--bad);color:#fff}
+.xi.s-bad .xo{font-weight:600}
+/* 漏选：正确项没选 */
+.xi.s-miss{border:1.5px dashed var(--ok)}
+/* 其他错误项：弱化 */
+.xi.s-other{opacity:.72}
+.xi.s-other .xo{color:var(--ink-2)}

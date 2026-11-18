@@ -172,7 +172,7 @@
   boot();
 })();
 
-// ===== 新版本提示：发布时会写入 version.txt，页面定期检查，有更新就提示刷新 =====
+// ===== 新版本提示：发布时会写入 version.txt；不定时轮询，只在切回这个标签页时检查一次 =====
 (function () {
   if (location.protocol === "file:") return;
   let base = null, shown = false;
@@ -189,7 +189,5 @@
       }
     }).catch(() => {});
   check();
-  setInterval(check, 60 * 1000);
-  window.addEventListener("focus", check);
   document.addEventListener("visibilitychange", () => { if (!document.hidden) check(); });
 })();
