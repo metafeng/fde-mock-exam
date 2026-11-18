@@ -19,11 +19,19 @@
 
 ## 关于 FDE 认证
 
+![腾讯云培训认证 · FDE 认证详情页](docs/images/official-cert-page.png)
+
+<sub>图：腾讯云培训认证官网 FDE 认证详情页（截图）</sub>
+
 - 认证详情页（报名、在线课程、模拟考试、考试预约）：<https://cloud.tencent.com/edu/training/cert/detail?type=CID>
 - 官方考试指南：<https://cloud.tencent.com/document/product/658/139487>
 - 认证级别：TCCP（腾讯云职业认证），科目代码 CID；证书有效期 2 年
 
 **认证简介**（摘自官方考试指南）：适用于希望以 AI 前沿部署驱动客户业务落地与组织经验复用的交付型骨干，以及承担客户需求洞察、企业智能体方案设计与上线安全治理的工程师与解决方案角色。通过本认证，将具备从理解 FDE 角色本质与腾讯云 AI 工具矩阵，到独立完成真需求挖掘、企业智能体搭建、评测驱动交付与安全治理的完整能力链。
+
+![认证简介](docs/images/official-cert-intro.png)
+
+<sub>图：官网「认证简介」——证书有效期 2 年，理论考试</sub>
 
 **建议考生具备**：
 
@@ -61,6 +69,51 @@
 | 安全治理与护栏 | 9.5% | 约束三层模型；三类护栏与检查时机；三段式日志与链路还原；MCP 认证三种方式；高危动作的人工兜底与门禁；上线自检八问；数据边界先于功能；Agent 权限比人更保守 |
 
 考试费用、报名和预约方式以认证详情页为准。
+
+通过后颁发「腾讯云认证证书」（TCCP 职业认证）：
+
+<p align="center"><img src="docs/images/cert-sample.png" width="560" alt="腾讯云认证证书样例"></p>
+<p align="center"><sub>图：官网展示的 FDE 证书样例</sub></p>
+
+## 系统截图
+
+> 以下截图来自本项目，数据为演示用的练习记录。
+
+**首页：选择练习方式**——「整卷模拟」按官方知识分布随机组一整套 60 题；「分章节专项练习」按模块挑着练。下方是知识分布和考试须知，首页还会显示错题集和最近成绩。
+
+![首页](docs/images/app-home.png)
+
+**整卷模拟：选择答题模式**——考试模式（120 分钟倒计时、交卷后统一出分）或练习模式（每题当场判分并解析）。
+
+![选择答题模式](docs/images/app-mode.png)
+
+**答题界面**——左侧答题卡按单选 / 多选分组，已答、标记一目了然；右上角可一键交卷，或「退出」暂停下次继续。
+
+![答题界面](docs/images/app-exam.png)
+
+**练习模式：答错立即看解析**——逐项说明每个选项为什么对、为什么错（标出错选 / 漏选），再给出本题考点和知识点讲解；答对则解析自动收起，直接做下一题。
+
+![练习模式解析](docs/images/app-practice-feedback.png)
+
+**成绩页**——得分、是否通过、各模块正确率，可「只练错题」或查看错题集，下方是全部题目的逐题解析。
+
+![成绩页](docs/images/app-result.png)
+
+**分章节专项练习**——每个模块显示已做题数和正确率，可多选模块，自定题量、出题顺序（没做过优先 / 错题优先 / 随机）和答题方式。
+
+![分章节专项练习](docs/images/app-topic.png)
+
+**知识点速览**——按课程小节汇总所选模块的全部考点，可展开查看讲解，考前快速过一遍。
+
+![知识点速览](docs/images/app-overview.png)
+
+**手机端**——自适应布局，答题顶栏和答题卡针对小屏重新排布。
+
+<p align="center">
+  <img src="docs/images/app-mobile-home.png" width="280" alt="手机首页">
+  &nbsp;&nbsp;
+  <img src="docs/images/app-mobile-exam.png" width="280" alt="手机答题">
+</p>
 
 ## 功能
 
@@ -142,6 +195,7 @@ data/m0~m9.json     各模块题目源文件，set 字段表示第几套
 data/official.json  官方模拟考试 15 题
 scripts/build.py    合并 data/ 生成 js/questions.js，并校验格式
 server.js           零依赖本地静态服务器
+docs/images/        README 用的截图（官网认证页与本系统界面）
 ```
 
 ## 添加或修改题目
