@@ -256,7 +256,8 @@
     return [...add.filter((w) => new RegExp(escRe(w.w), "i").test(g.term)), ...own, ...add.filter((w) => !new RegExp(escRe(w.w), "i").test(g.term))].slice(0, 7);
   }
 
-  function backHtml(g) {
+  function backHtml(g, o) {
+    o = o || {}; // o.lite：上方已展示一句话、图解、易错，这里不再重复
     const rel = related(g);
     const more = [
       (g.points || []).length ? `<div class="cm-sec"><span class="cb-tag t-pt">${ic("list")}要点</span><ol class="cb-points">${g.points.map((p) => `<li>${pointHtml(p)}</li>`).join("")}</ol></div>` : "",
@@ -265,16 +266,16 @@
       g.confuse ? `<div class="cm-sec"><span class="cb-tag t-conf">${ic("alert")}易混</span><p>${esc(g.confuse)}</p></div>` : "",
     ].join("");
     return `
-      <p class="cb-plain">${esc(g.plain)}</p>
+      ${o.lite ? "" : `<p class="cb-plain">${esc(g.plain)}</p>`}
       ${wordsFor(g).length ? `<dl class="cb-words">${wordsFor(g).map((w) => `<div><dt>${esc(w.w)}</dt><dd>${hl(w.e)}</dd></div>`).join("")}</dl>` : ""}
       ${whereHtml(g)}
-      ${visualHtml(g.visual, g)}
+      ${o.lite ? "" : visualHtml(g.visual, g)}
       ${imgHtml(g)}
       ${(g.keys || []).length ? `<div class="cb-keys"><span class="ck-h">${ic("target")}关键参数</span><div class="ck-list">${g.keys.map((k) => `<div class="ck"><b>${esc(k.v)}</b><span>${esc(k.k)}</span></div>`).join("")}</div></div>` : ""}
-      ${g.trap ? `<p class="cb-trap">${ic("alert")}<span class="ct-h">易错</span><span>${hl(g.trap)}</span></p>` : ""}
+      ${g.trap && !o.lite ? `<p class="cb-trap">${ic("alert")}<span class="ct-h">易错</span><span>${hl(g.trap)}</span></p>` : ""}
       ${g.mnemonic ? `<p class="cb-mn"><span>口诀</span>${esc(g.mnemonic)}</p>` : ""}
       <details class="cb-more"${moreOpen ? " open" : ""}><summary>详细说明<em>要点 · 例子 · 类比 · 易混</em></summary><div class="cm-body">${more}</div></details>
-      <p class="cb-foot"><span></span>${rel.length ? `<button type="button" class="link cb-rel" data-id="${g.id}">练相关题（${rel.length}）→</button>` : ""}</p>`;
+      ${o.lite ? "" : `<p class="cb-foot"><span></span>${rel.length ? `<button type="button" class="link cb-rel" data-id="${g.id}">练相关题（${rel.length}）→</button>` : ""}</p>`}`;
   }
   document.addEventListener("toggle", (e) => { if (e.target.classList && e.target.classList.contains("cb-more")) moreOpen = e.target.open; }, true);
 
@@ -300,7 +301,7 @@
       <p class="qc-plain">${esc(g.plain)}</p>
       ${visualHtml(g.visual, g)}
       ${g.trap ? `<p class="cb-trap">${ic("alert")}<span class="ct-h">易错</span><span>${hl(g.trap)}</span></p>` : ""}
-      <details class="qc-more"><summary>展开完整卡片</summary><div class="flash-back qc-full">${backHtml(g)}</div></details>
+      <details class="qc-more"><summary>展开完整卡片<em>名词 · 原图 · 参数 · 要点 · 例子</em></summary><div class="flash-back qc-full">${backHtml(g, { lite: true })}</div></details>
     </div>`).join("")}`;
   };
 

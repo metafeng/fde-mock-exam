@@ -985,3 +985,5 @@ button.cp-card:hover{box-shadow:0 0 0 1.5px var(--accent);color:var(--accent)}
 .qc-more[open] summary::before{transform:rotate(45deg)}
 .qc-full{padding:8px 0 4px;border-top:1px solid var(--line);margin-top:4px}
 .feedback .qcard p{margin:0}
+.qc-more .flash-back.qc-full{display:block;padding:10px 0 4px;animation:none}
+.qc-more summary em{font-style:normal;font-weight:400;font-size:12px;color:var(--muted);margin-left:4px}
