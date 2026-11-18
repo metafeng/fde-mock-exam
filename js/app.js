@@ -167,7 +167,7 @@ function feedbackHtml(n, cls) {
       const st = S.browse ? (ok ? "s-right" : "s-other") : ok ? (picked ? "s-hit" : "s-miss") : (picked ? "s-bad" : "s-other");
       // 选项原文上方已经显示，这里只用「字母 + ✓/✕」徽标对应，解析文字是主角
       const plain = String(q.o[o]).replace(/<[^>]+>/g, "").replace(/"/g, "&quot;");
-      return `<div class="xi ${st}"><span class="xbadge ${ok ? "ok" : "no"}" title="${letters[k]}. ${plain}">${letters[k]}<i>${ok ? "✓" : "✕"}</i></span><p class="xe">${txt}</p>${!S.browse && picked ? `<em class="xt ${ok ? "t-ok" : "t-bad"}">你选</em>` : ""}</div>`;
+      return `<div class="xi ${st}"><span class="xbadge ${ok ? "ok" : "no"}" title="${letters[k]}. ${plain}">${letters[k]}<i>${ok ? "✓" : "✕"}</i></span><p class="xe">${txt}</p>${!S.browse && picked ? `<em class="xt ${ok ? "t-ok" : "t-bad"}">你选</em>` : !S.browse && ok && q.t === "m" && a.length ? `<em class="xt t-miss">漏选</em>` : ""}</div>`;
     }).join("")}</div>` : `<p><b>解析：</b>${q.e}</p>`;
   const head = S.browse
     ? `正确答案 ${rightL}`

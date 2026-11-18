@@ -315,12 +315,12 @@
   }
   window.cardPeekHtml = function (qi) {
     const list = cardsForQuestion(qi); if (!list.length) return "";
-    return `<p class="sec">相关术语卡片</p>${list.map((g) => `<div class="qcard">
-      <div class="qc-head">${tile(g, "sm")}<b>${esc(g.term)}</b><span class="cf-mod">${esc(MODULES[g.m][0])}</span></div>
+    return `<p class="sec">相关术语卡片</p>${list.map((g, i) => `<div class="qcard" style="--mc:${((window.MODULE_COLORS || [])[g.m] || ["#3b8bff", "#0a5ce6"])[1]}">
+      <div class="qc-head">${tile(g, "sm")}<b>${esc(g.term)}</b><span class="cf-mod">${esc(MODULES[g.m][0])}</span>${list.length > 1 ? `<span class="qc-no">相关卡片 ${i + 1}/${list.length}</span>` : ""}</div>
       <p class="qc-plain">${esc(g.plain)}</p>
       ${visualHtml(g.visual, g)}
       ${g.trap ? `<p class="cb-trap">${ic("alert")}<span class="ct-h">易错</span><span>${hl(g.trap)}</span></p>` : ""}
-      <details class="qc-more"><summary>展开完整卡片<em>名词 · 原图 · 参数 · 要点 · 例子</em></summary><div class="flash-back qc-full">${backHtml(g, { lite: true })}</div></details>
+      <details class="qc-more"><summary>展开完整卡片<em>名词 · 原图 · 参数 · 要点 · 例子</em></summary><div class="flash-back qc-full">${backHtml(g, { lite: true })}<button type="button" class="qc-close" onclick="const d=this.closest('details');d.open=false;d.closest('.qcard').scrollIntoView({block:'nearest',behavior:'smooth'})">收起「${esc(g.term)}」</button></div></details>
     </div>`).join("")}`;
   };
 

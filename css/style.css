@@ -1053,3 +1053,12 @@ button.cp-card:hover{box-shadow:0 0 0 1.5px var(--accent);color:var(--accent)}
   .cb-table td.c0{font-size:14px;white-space:normal;margin-bottom:3px}
   .cb-table td:not(.c0)::before{content:attr(data-h) "："; font-weight:600;color:var(--muted);font-size:12px}
 }
+/* 相关术语卡片：边界清晰 */
+.qcard{position:relative;border:1.5px solid var(--line);border-top:4px solid var(--mc,#0a5ce6);border-radius:14px;box-shadow:0 6px 18px -12px rgba(0,0,0,.3);margin:0 0 18px;padding:14px 16px 12px}
+.qc-no{margin-left:auto;font-size:11.5px;font-weight:700;color:var(--muted);background:var(--panel-2);border-radius:999px;padding:2px 9px}
+.qc-more{margin-top:4px}
+.qc-more[open] > summary{color:var(--muted)}
+.qc-more[open] > summary::after{content:"（已展开）";font-weight:400;font-size:12px}
+.qc-more .flash-back.qc-full{margin:6px 0 2px;padding:14px 14px 10px;border:0;border-left:3px solid var(--mc,#0a5ce6);border-radius:0 10px 10px 0;background:var(--panel-2)}
+.qc-close{display:block;width:100%;margin-top:10px;padding:8px;border:1px dashed var(--line);border-radius:8px;background:var(--panel);color:var(--accent);font:600 13px/1 inherit;cursor:pointer}
+.qc-close:hover{border-color:var(--accent)}
