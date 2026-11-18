@@ -385,3 +385,10 @@ details.more[open] summary::after{transform:rotate(-135deg);margin-top:3px}
   .ios-seg{display:flex}.ios-seg button{flex:1;min-width:0;padding:6px 4px}
 }
 .opt-panel{text-align:left}
+
+/* 同步状态 */
+.sync-state{font-size:12px;color:var(--muted);display:inline-flex;align-items:center;gap:5px;white-space:nowrap}
+.sync-state::before{content:"";width:7px;height:7px;border-radius:50%;background:currentColor}
+.sync-state.ok{color:var(--ok)} .sync-state.busy{color:var(--mark)} .sync-state.off{color:var(--bad)}
+body.in-exam .sync-state{display:none}
+@media (max-width:820px){.sync-state{font-size:11px}}

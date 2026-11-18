@@ -6,3 +6,5 @@ auth/users.json
 auth/secret
 # 本机部署配置（服务器地址），不入库
 scripts/deploy.env
+# 登录服务在服务器上保存的各账号练习数据，不入库
+auth/data/

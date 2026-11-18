@@ -97,9 +97,49 @@ ${error ? `<div class="err">${esc(error)}</div>` : ""}
 
 const cookie = (val, age) => `${COOKIE}=${val}; Path=/; Max-Age=${age}; HttpOnly; Secure; SameSite=Lax`;
 
+// ---- 练习数据：每个账号一份，跨设备同步 ----
+// 文件：DATA_DIR/<用户名的 base64url>.json  { rev, updatedAt, data: {key: 字符串}, meta: {key: 修改时间} }
+const DATA_DIR = process.env.FDE_DATA || path.join(DIR, "data");
+fs.mkdirSync(DATA_DIR, { recursive: true, mode: 0o700 });
+const stateFile = (user) => path.join(DATA_DIR, Buffer.from(user).toString("base64url") + ".json");
+const readState = (user) => { try { return JSON.parse(fs.readFileSync(stateFile(user), "utf8")); } catch { return { rev: 0, updatedAt: 0, data: {}, meta: {} }; } };
+function writeState(user, st) {
+  const f = stateFile(user), tmp = f + ".tmp";
+  fs.writeFileSync(tmp, JSON.stringify(st), { mode: 0o600 });
+  fs.renameSync(tmp, f); // 原子替换，避免写一半
+}
+const sendJSON = (res, code, obj) => { res.writeHead(code, { "Content-Type": "application/json; charset=utf-8", "Cache-Control": "no-store" }); res.end(JSON.stringify(obj)); };
+
+function handleState(req, res, url) {
+  const user = readToken(req.headers.cookie);
+  if (!user) return sendJSON(res, 401, { error: "unauthorized" });
+  if (req.method === "GET") {
+    const st = readState(user);
+    const since = Number(url.searchParams.get("since"));
+    if (url.searchParams.has("since") && since === st.rev) return sendJSON(res, 200, { user, rev: st.rev, changed: false });
+    return sendJSON(res, 200, { user, ...st, changed: true });
+  }
+  if (req.method === "PUT") {
+    let body = "";
+    req.on("data", (c) => { body += c; if (body.length > 2 * 1024 * 1024) req.destroy(); });
+    req.on("end", () => {
+      let p; try { p = JSON.parse(body); } catch { return sendJSON(res, 400, { error: "bad json" }); }
+      const cur = readState(user);
+      if (Number(p.baseRev) !== cur.rev) return sendJSON(res, 409, { user, ...cur }); // 别的设备先写了：返回最新数据让客户端合并后重试
+      const next = { rev: cur.rev + 1, updatedAt: Date.now(), data: p.data || {}, meta: p.meta || {} };
+      writeState(user, next);
+      sendJSON(res, 200, { rev: next.rev, updatedAt: next.updatedAt });
+    });
+    return;
+  }
+  sendJSON(res, 405, { error: "method not allowed" });
+}
+
 http.createServer((req, res) => {
   const url = new URL(req.url, "http://x");
   const ip = req.headers["x-real-ip"] || req.socket.remoteAddress;
+
+  if (url.pathname === "/api/state") return handleState(req, res, url);
 
   if (url.pathname === "/verify") { res.writeHead(readToken(req.headers.cookie) ? 204 : 401); return res.end(); }
 
