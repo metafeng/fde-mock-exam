@@ -7,6 +7,9 @@
 
   const load = (k, d) => { try { return JSON.parse(localStorage.getItem(k) || "null") || d; } catch (e) { return d; } };
   const store = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} };
+  const ic = (n, c) => (window.iconSvg ? window.iconSvg(n, c) : "");
+  // 术语图标：模块配色的圆角方块里放线性图标
+  const tile = (g, size) => { const c = (window.MODULE_COLORS || [])[g.m] || ["#3b8bff", "#0a5ce6"]; return `<span class="term-tile ${size || ""}" style="background:linear-gradient(180deg,${c[0]},${c[1]})">${ic(g.icon)}</span>`; };
   const esc = (t) => String(t == null ? "" : t).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
 
   // 术语 id：模块 + 术语名
@@ -69,12 +72,12 @@
   function backHtml(g) {
     const rel = related(g);
     return `
-      <p class="cb-plain">${esc(g.plain)}</p>
-      ${g.analogy ? `<p class="cb-row"><span class="cb-tag t-ana">类比</span>${esc(g.analogy)}</p>` : ""}
-      <ul class="cb-points">${(g.points || []).map((p) => `<li>${esc(p)}</li>`).join("")}</ul>
-      ${g.confuse ? `<p class="cb-row"><span class="cb-tag t-conf">易混</span>${esc(g.confuse)}</p>` : ""}
-      ${g.mnemonic ? `<p class="cb-row"><span class="cb-tag t-mn">口诀</span><b>${esc(g.mnemonic)}</b></p>` : ""}
-      <p class="cb-foot"><span>出处：${esc(g.src)}</span>${rel.length ? `<button type="button" class="link cb-rel" data-id="${g.id}">练相关题（${rel.length}）→</button>` : ""}</p>`;
+      <p class="cb-plain"><span class="cb-ic i-plain">${ic("chat")}</span><span>${esc(g.plain)}</span></p>
+      ${g.analogy ? `<p class="cb-row"><span class="cb-tag t-ana">${ic("bulb")}类比</span><span>${esc(g.analogy)}</span></p>` : ""}
+      <div class="cb-pts"><span class="cb-tag t-pt">${ic("list")}要点</span><ul class="cb-points">${(g.points || []).map((p) => `<li>${esc(p)}</li>`).join("")}</ul></div>
+      ${g.confuse ? `<p class="cb-row"><span class="cb-tag t-conf">${ic("alert")}易混</span><span>${esc(g.confuse)}</span></p>` : ""}
+      ${g.mnemonic ? `<p class="cb-row"><span class="cb-tag t-mn">${ic("music")}口诀</span><b>${esc(g.mnemonic)}</b></p>` : ""}
+      <p class="cb-foot"><span class="cb-src">${ic("book")}出处：${esc(g.src)}</span>${rel.length ? `<button type="button" class="link cb-rel" data-id="${g.id}">练相关题（${rel.length}）→</button>` : ""}</p>`;
   }
 
   function practiceRelated(id) {
@@ -102,12 +105,13 @@
       <div class="cv-count">第 ${pos + 1} / ${queue.length} 张</div>
       <div class="flash ${flipped ? "flipped" : ""}" id="flash" tabindex="0" role="button" aria-label="翻面">
         <div class="flash-front">
-          <span class="cf-mod">${esc(MODULES[g.m][0])}</span>${badge}
+          ${tile(g, "big")}
+          <div><span class="cf-mod">${esc(MODULES[g.m][0])}</span>${badge}</div>
           <h2>${esc(g.term)}</h2>
           ${(g.aliases || []).length ? `<p class="cf-alias">${g.aliases.map(esc).join(" · ")}</p>` : ""}
           <p class="cf-hint">先想一想它是什么意思，再点卡片看答案</p>
         </div>
-        <div class="flash-back"><div class="cb-head"><span class="cf-mod">${esc(MODULES[g.m][0])}</span><h3>${esc(g.term)}</h3></div>${backHtml(g)}</div>
+        <div class="flash-back"><div class="cb-head">${tile(g)}<div><h3>${esc(g.term)}</h3><span class="cf-mod">${esc(MODULES[g.m][0])}</span></div></div>${backHtml(g)}</div>
       </div>
       <div class="cv-act">
         ${flipped
@@ -140,7 +144,7 @@
       <section class="cl-group"><h4>${esc(MODULES[m][0])}</h4>
         ${items.map((g) => { const k = s[g.id] && s[g.id].k === 1; return `
           <details class="cl-item ${k ? "known" : ""}">
-            <summary><span class="cl-term">${esc(g.term)}</span><span class="cl-plain">${esc(g.plain)}</span>${g.mnemonic ? `<span class="cl-mn">${esc(g.mnemonic)}</span>` : ""}</summary>
+            <summary><span class="cl-term">${tile(g, "sm")}<span>${esc(g.term)}</span></span><span class="cl-plain">${esc(g.plain)}</span>${g.mnemonic ? `<span class="cl-mn">${esc(g.mnemonic)}</span>` : ""}</summary>
             <div class="cl-body">${backHtml(g)}
               <div class="cl-act"><button type="button" class="btn ${k ? "" : "primary"}" data-k="${g.id}">${k ? "标为没掌握" : "标为已掌握"}</button></div>
             </div>
