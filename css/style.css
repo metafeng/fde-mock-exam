@@ -686,3 +686,20 @@ mark.kv{background:linear-gradient(transparent 55%,#ffe58a 55%);color:inherit;fo
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]) mark.kv{background:linear-gradient(transparent 55%,#6b5310 55%)}:root:not([data-theme="light"]) .ck{background:#2e2414;border-color:#5a4220}:root:not([data-theme="light"]) .ck b{color:#ffbf70}}
 @media (max-width:820px){.ck-list{grid-template-columns:repeat(2,1fr)}.ck b{font-size:17px}}
 @media (max-width:820px){.ck{padding:8px 10px;border-radius:10px}.ck b{font-size:15.5px}.ck span{font-size:11.5px}}
+/* 关键参数 v2：紧凑行内标签 */
+.cb-keys{display:flex;align-items:flex-start;gap:10px;margin:0 0 14px;padding:10px 12px;border-radius:12px;background:#fffbf3;border:1px solid #fbe7c6}
+.ck-h{flex:none;margin:3px 0 0;font-size:12px;color:#b4580b;gap:4px}
+.ck-h .ic{width:13px;height:13px}
+.ck-list{display:flex;flex-wrap:wrap;gap:6px 6px;grid-template-columns:none}
+.ck{flex-direction:row;align-items:baseline;gap:5px;background:#fff;border:1px solid #f6dfb8;border-radius:7px;padding:3px 9px;min-width:0}
+.ck b{font-size:14px;line-height:1.5;color:#c25a00;letter-spacing:0;word-break:normal;white-space:nowrap}
+.ck span{font-size:12px;color:var(--muted);white-space:nowrap}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .cb-keys{background:#2a2114;border-color:#4a3820}:root:not([data-theme="light"]) .ck{background:#1f1a12;border-color:#4a3820}}
+@media (max-width:820px){
+  .cb-keys{flex-direction:column;gap:7px;padding:10px}
+  .ck-h{margin:0}
+  .ck-list{display:flex;grid-template-columns:none}
+  .ck{padding:3px 8px;border-radius:7px}
+  .ck b{font-size:13.5px}.ck span{font-size:11.5px}
+}
+.ck-h{margin-top:5px}@media (max-width:820px){.ck-h{margin-top:0}}
