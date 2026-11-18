@@ -320,7 +320,7 @@
       <p class="qc-plain">${esc(g.plain)}</p>
       ${visualHtml(g.visual, g)}
       ${g.trap ? `<p class="cb-trap">${ic("alert")}<span class="ct-h">易错</span><span>${hl(g.trap)}</span></p>` : ""}
-      <details class="qc-more"><summary>展开完整卡片<em>名词 · 原图 · 参数 · 要点 · 例子</em></summary><div class="flash-back qc-full">${backHtml(g, { lite: true })}<button type="button" class="qc-close" onclick="const d=this.closest('details');d.open=false;d.closest('.qcard').scrollIntoView({block:'nearest',behavior:'smooth'})">收起「${esc(g.term)}」</button></div></details>
+      <details class="qc-more"><summary><span class="qs-o">展开完整卡片</span><span class="qs-c">收起「${esc(g.term)}」</span><em>名词 · 原图 · 参数 · 要点 · 例子</em></summary><div class="flash-back qc-full">${backHtml(g, { lite: true })}<button type="button" class="qc-close" onclick="const d=this.closest('details');d.open=false;d.closest('.qcard').scrollIntoView({block:'nearest',behavior:'smooth'})">收起「${esc(g.term)}」</button></div></details>
     </div>`).join("")}`;
   };
 
@@ -495,4 +495,10 @@
     else if (flipped && e.key === "ArrowRight") answer(true);
   });
   updateEntry();
+})();
+
+// 吸顶元素的偏移量 = 顶栏实际高度（手机上顶栏有两行）
+(function () {
+  const set = () => { const h = document.querySelector("header.bar"); if (h) document.documentElement.style.setProperty("--hdr", Math.round(h.getBoundingClientRect().height) + "px"); };
+  set(); window.addEventListener("resize", set); document.addEventListener("click", () => setTimeout(set, 50), true);
 })();
