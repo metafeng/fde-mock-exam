@@ -70,6 +70,23 @@ def main():
     )
     (ROOT / "js" / "questions.js").write_text(out, encoding="utf-8")
 
+    # 术语卡片：data/glossary/g0.json ~ g9.json → js/glossary.js
+    gloss = []
+    for m in range(10):
+        f = DATA / "glossary" / f"g{m}.json"
+        if not f.exists():
+            continue
+        for rank, g in enumerate(json.loads(f.read_text(encoding="utf-8"))):
+            for key in ("term", "plain", "points", "src"):
+                if not g.get(key):
+                    errors.append(f"术语 g{m} #{rank} 缺字段 {key}")
+            g["m"], g["rank"] = m, rank
+            gloss.append(g)
+    (ROOT / "js" / "glossary.js").write_text(
+        "// 由 scripts/build.py 根据 data/glossary/*.json 生成，请勿手改。\n"
+        f"window.GLOSSARY = {json.dumps(gloss, ensure_ascii=False, indent=0)};\n", encoding="utf-8")
+    print(f"术语卡片：{len(gloss)} 个")
+
     for s in sets:
         qs = [q for q in bank if q["set"] == s]
         print(f"第 {s} 套：{len(qs)} 题（单选 {sum(q['t'] == 's' for q in qs)}，多选 {sum(q['t'] == 'm' for q in qs)}）")

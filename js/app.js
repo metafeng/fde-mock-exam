@@ -10,7 +10,7 @@ function load() { try { return JSON.parse(localStorage.getItem(KEY) || "null"); 
 function getMode() { const el = document.querySelector('input[name="mode"]:checked'); return el ? el.value : "exam"; }
 const practice = () => S && S.mode === "practice";
 
-function setName(id) { return id === "wrong" ? "错题集" : id === "topic" ? (typeof topicName === "function" ? topicName(S && S.topicCfg && S.topicCfg.mods) : "专项练习") : "模拟卷"; }
+function setName(id) { return id === "cards" ? "术语相关题" : id === "wrong" ? "错题集" : id === "topic" ? (typeof topicName === "function" ? topicName(S && S.topicCfg && S.topicCfg.mods) : "专项练习") : "模拟卷"; }
 function setIds(id) {
   if (id === "wrong") { const w = loadWrong(); return BANK.map((q, i) => i).filter((i) => w[qid(i)]); }
   return BANK.map((q, i) => (String(q.set) === String(id) ? i : -1)).filter((i) => i >= 0);
@@ -99,7 +99,7 @@ function newExam(ids, mode, setId) {
 
 
 function show(view) {
-  ["startView", "examView", "resultView"].forEach((v) => ($("#" + v).hidden = v !== view));
+  ["startView", "cardView", "examView", "resultView"].forEach((v) => ($("#" + v).hidden = v !== view));
   if (view === "startView") homeStep(1);
   const exam = view === "examView";
   $("#timer").hidden = !exam; $("#submitBtn").hidden = !exam; $("#quickBtn").hidden = !exam; $("#exitBtn").hidden = view === "startView"; document.body.classList.toggle("in-exam", exam); $("#logoutLink").hidden = !(view === "startView" && /metafeng\.com$/.test(location.hostname)); $("#progress").hidden = !exam;
@@ -310,7 +310,7 @@ function renderResult(filter) {
     if (q.t === "s") { sN++; if (r) { sR++; score += 1.5; } } else { mN++; if (r) { mR++; score += 2; } }
   });
   const total = sN * 1.5 + mN * 2, pct = Math.round((score / total) * 1000) / 10, pass = pct >= 70;
-  if (!S.retry && !S.bestSaved && S.setId !== "wrong" && S.setId !== "topic") { pushHist(Math.round(pct)); S.bestSaved = true; save(); }
+  if (!S.retry && !S.bestSaved && S.setId !== "wrong" && S.setId !== "topic" && S.setId !== "cards") { pushHist(Math.round(pct)); S.bestSaved = true; save(); }
   const wrongIdx = S.ids.map((_, n) => n).filter((n) => !isRight(n));
   const modRows = mod.map((x, m) => {
     if (!x.n) return "";
@@ -345,7 +345,7 @@ function renderResult(filter) {
     <div class="review-list">${reviews}</div>`;
   const mode = S.mode, setId = S.setId;
   const tcfg = S.topicCfg;
-  $("#retryAll").onclick = () => { if (setId === "topic" && tcfg) return startTopic(tcfg); newExam(null, mode, setId); enterExam(); };
+  $("#retryAll").onclick = () => { if (setId === "topic" && tcfg) return startTopic(tcfg); if (setId === "cards") { newExam(S.ids.slice(), mode, setId); return enterExam(); } newExam(null, mode, setId); enterExam(); };
   const rw = $("#retryWrong");
   if (rw) rw.onclick = () => { newExam(wrongIdx.map((n) => S.ids[n]), mode, setId); S.retry = true; S.topicCfg = tcfg; save(); enterExam(); };
   $("#openWrong").onclick = () => { newExam(null, "exam", "wrong"); S.browse = true; S.done = true; save(); renderBrowse(); };

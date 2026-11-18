@@ -5,10 +5,10 @@
 // 流程：先拉取服务器数据并与本地合并 → 再加载页面脚本；之后本地每次写入 1.5 秒内自动上传；
 // 切回页面时检查其他设备是否有更新。
 (function () {
-  const KEYS = ["fde-mock-qstat", "fde-mock-wrong", "fde-mock-hist", "fde-mock-seen", "fde-mock-topic", "fde-mock-mode", "fde-mock-v2"];
+  const KEYS = ["fde-mock-qstat", "fde-mock-wrong", "fde-mock-hist", "fde-mock-seen", "fde-mock-topic", "fde-mock-mode", "fde-mock-v2", "fde-mock-cards"];
   const META_KEY = "fde-sync-meta"; // 每个 key 的本地修改时间
   const REV_KEY = "fde-sync-rev";   // 本地已同步到的服务器版本号
-  const APP_SCRIPTS = ["js/questions.js", "js/app.js", "js/topic.js"];
+  const APP_SCRIPTS = ["js/questions.js", "js/glossary.js", "js/app.js", "js/topic.js", "js/cards.js"];
 
   const ls = window.localStorage;
   const rawSet = Storage.prototype.setItem, rawRemove = Storage.prototype.removeItem;
@@ -38,6 +38,11 @@
     if (k === "fde-mock-wrong") {
       const x = parse(a, {}), y = parse(b, {}), out = { ...x };
       for (const id in y) if (!out[id] || (y[id].n || 0) > (out[id].n || 0)) out[id] = y[id];
+      return JSON.stringify(out);
+    }
+    if (k === "fde-mock-cards") {
+      const x = parse(a, {}), y = parse(b, {}), out = { ...x };
+      for (const id in y) if (!out[id] || (y[id].t || 0) > (out[id].t || 0)) out[id] = y[id];
       return JSON.stringify(out);
     }
     if (k === "fde-mock-seen") return JSON.stringify({ ...parse(a, {}), ...parse(b, {}) });

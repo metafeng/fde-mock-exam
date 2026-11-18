@@ -58,6 +58,11 @@
               </span>
             </button>
           </div>
+          <button type="button" class="entry-wide" id="cardsEntry">
+            <span class="tile t-cards" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M6.5 5.5h9a1.5 1.5 0 0 1 1.5 1.5v11a1.5 1.5 0 0 1-1.5 1.5h-9A1.5 1.5 0 0 1 5 18V7a1.5 1.5 0 0 1 1.5-1.5z" fill="none" stroke="#fff" stroke-width="2"/><path d="M8.5 3.5h9A1.5 1.5 0 0 1 19 5v11" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"/><path d="M8.5 10.5h5M8.5 14h3.5" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg></span>
+            <span class="ew-main"><b>术语卡片 · 先认词再刷题</b><em id="cardsEntrySub">核心术语的大白话、类比、易混点和口诀</em></span>
+            <span class="go-arrow" aria-hidden="true"></span>
+          </button>
           <button class="btn resume" id="resumeBtn" hidden>继续上次未完成的考试</button>
         </div>
 
@@ -126,6 +131,19 @@
         </ul>
       </div>
     </div>
+  </section>
+
+  <section class="card-page" id="cardView" hidden>
+    <div class="cv-head">
+      <div class="cv-title"><h1>术语卡片</h1><p id="cvSummary"></p></div>
+      <div class="cv-progress"><span class="mr-bar"><i id="cvBar"></i></span></div>
+      <div class="cv-mods" id="cvMods"></div>
+      <div class="cv-tools">
+        <div class="ios-seg" id="cvView"><button type="button" data-v="card">卡片</button><button type="button" data-v="list">列表速览</button></div>
+        <div class="ios-seg" id="cvFilter"><button type="button" data-v="new">只看没掌握</button><button type="button" data-v="all">全部</button></div>
+      </div>
+    </div>
+    <div id="cvBody"></div>
   </section>
 
   <section class="exam" id="examView" hidden>
