@@ -201,6 +201,17 @@
     return links.map(([href, label, title]) => `<a class="src-a" href="${href}" target="_blank" rel="noopener" title="打开原文：${esc(title)}">${ic("book")}<span>${esc(label)}</span></a>`).join("");
   }
 
+  // 课程原表：课程文档中的表格原样列出
+  function tableHtml(g) {
+    return (g.tables || []).map((t) => {
+      const rows = t.rows || []; if (!rows.length) return "";
+      const head = rows[0], body = rows.slice(1);
+      return `<figure class="cb-table"><figcaption>${ic("list")}<span class="ct-tag">课程原表</span>${esc(t.title || "")}</figcaption>
+        <div class="ct-wrap"><table><thead><tr>${head.map((h) => `<th>${esc(h)}</th>`).join("")}</tr></thead>
+        <tbody>${body.map((r) => `<tr>${r.map((cell, j) => `<td${j === 0 ? ' class="c0"' : ""} data-h="${esc(head[j] || "")}">${hl(cell)}</td>`).join("")}</tr>`).join("")}</tbody></table></div></figure>`;
+    }).join("");
+  }
+
   // 课程原图：来自飞书课程文档，点击放大
   function imgHtml(g) {
     return (g.img || []).map((im) => `<figure class="cb-img"><button type="button" class="ci-btn" data-zoom="${esc(im.f)}" aria-label="放大查看课程原图">
@@ -277,6 +288,7 @@
       ${whereHtml(g)}
       ${o.lite ? "" : visualHtml(g.visual, g)}
       ${o.lite || !g.visual2 ? "" : visualHtml(g.visual2, g)}
+      ${tableHtml(g)}
       ${imgHtml(g)}
       ${(g.keys || []).length ? `<div class="cb-keys"><span class="ck-h">${ic("target")}关键参数</span><div class="ck-list">${g.keys.map((k) => `<div class="ck"><b>${esc(k.v)}</b><span>${esc(k.k)}</span></div>`).join("")}</div></div>` : ""}
       ${g.trap && !o.lite ? `<p class="cb-trap">${ic("alert")}<span class="ct-h">易错</span><span>${hl(g.trap)}</span></p>` : ""}
@@ -353,7 +365,7 @@
       <p class="cv-keys">快捷键：空格翻面　← 不认识　→ 认识了</p>`;
     // 正面：点哪里都翻面；背面：只有点标题行才翻回去，点「展开详细说明」、图解、文字都不翻面
     $("#flash").onclick = (e) => {
-      if (e.target.closest(".cb-rel, .cb-more, .cb-where, .cw-pop, .cb-img, a, button")) return;
+      if (e.target.closest(".cb-rel, .cb-more, .cb-where, .cw-pop, .cb-img, .cb-table, a, button")) return;
       if (flipped && !e.target.closest(".cb-head")) return;
       if (String(window.getSelection && window.getSelection()) !== "") return; // 正在选中文字时不翻面
       flipped = !flipped; renderCard();
