@@ -110,6 +110,11 @@
         const gap = m && i === m[1] ? `<div class="vz2-cliff"><span>${esc(v.mark.label || "")}</span></div>` : "";
         return gap + `<div class="vz2-lv">${icb(x.i, "vn-ic sm", 0, x.t)}<b>${esc(x.t)}</b>${x.d ? `<span>${esc(x.d)}</span>` : ""}<div class="vz2-bar" style="height:${18 + i * (70 / Math.max(items.length - 1, 1))}px;background:linear-gradient(180deg,${c[0]},${c[1]})"></div></div>`;
       }).join("")}</div>`;
+    } else if (v.type === "matrix") {
+      // 阶段 × 周次矩阵：最后一列（定稿 · 过 Gate）高亮
+      const cols = v.cols || [], rows = v.rows || [];
+      body = `<div class="vz2-matrix" style="--n:${cols.length}"><div class="mx-h"></div>${cols.map((cname, j) => `<div class="mx-h${j === cols.length - 1 ? " last" : ""}">${esc(cname)}</div>`).join("")}
+        ${rows.map((r) => `<div class="mx-row" style="background:linear-gradient(145deg,${c[0]},${c[1]})"><b>${esc(r.t)}</b><span>${esc(r.s || "")}</span></div>${(r.cells || []).map((cell, j) => `<div class="mx-c${j === cols.length - 1 ? " last" : ""}">${hl(cell)}</div>`).join("")}`).join("")}</div>`;
     } else if (v.type === "compare") {
       const L = v.left || {}, Rt = v.right || {}, rows = Math.max((L.items || []).length, (Rt.items || []).length);
       const tl = toneOf(L.i || ""), tr = toneOf(Rt.i || "");
@@ -271,6 +276,7 @@
       ${wordsFor(g).length ? `<dl class="cb-words">${wordsFor(g).map((w) => `<div><dt>${esc(w.w)}</dt><dd>${hl(w.e)}</dd></div>`).join("")}</dl>` : ""}
       ${whereHtml(g)}
       ${o.lite ? "" : visualHtml(g.visual, g)}
+      ${o.lite || !g.visual2 ? "" : visualHtml(g.visual2, g)}
       ${imgHtml(g)}
       ${(g.keys || []).length ? `<div class="cb-keys"><span class="ck-h">${ic("target")}关键参数</span><div class="ck-list">${g.keys.map((k) => `<div class="ck"><b>${esc(k.v)}</b><span>${esc(k.k)}</span></div>`).join("")}</div></div>` : ""}
       ${g.trap && !o.lite ? `<p class="cb-trap">${ic("alert")}<span class="ct-h">易错</span><span>${hl(g.trap)}</span></p>` : ""}
