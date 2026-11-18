@@ -78,7 +78,7 @@
     const toneOf = (n) => /^(listx|ban|xcircle|stop|trash|bug|eyeoff|minus)$/.test(n) ? "bad" : /^(listcheck|check|shieldcheck|thumbup|trophy|badge|plus)$/.test(n) ? "good" : /^(alert|hourglass)$/.test(n) ? "warn" : "";
     const gradOf = (n) => { const t = TONE[toneOf(n)] || c; return `background:linear-gradient(145deg,${t[0]},${t[1]})`; };
     const icb = (name, cls, num) => `<span class="${cls || "vn-ic"}" style="${gradOf(name || g.icon)}">${window.iconSvg(name || g.icon || "bulb")}${num ? `<i class="vn-num">${num}</i>` : ""}</span>`;
-    const node = (x, i, num) => `<div class="vn">${icb(x.i, "", num ? i + 1 : 0)}<b>${esc(x.t)}</b>${x.d ? `<span>${esc(x.d)}</span>` : ""}</div>`;
+    const node = (x, i, num) => `<div class="vn">${icb(x.i, "", num ? i + 1 : 0)}<b>${esc(x.t)}</b>${x.d ? `<span>${hl(x.d)}</span>` : ""}</div>`;
     const arrow = `<svg class="vz-arr" viewBox="0 0 24 12" aria-hidden="true"><path d="M1 6h20M16 1.5L21.5 6 16 10.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
     const items = v.items || [];
     let body = "";
@@ -118,20 +118,31 @@
     return `<figure class="vz2">${body}${v.note ? `<p class="vz2-note"><span>${window.iconSvg("alert", "ic")}${esc(v.note)}</span></p>` : ""}</figure>`;
   }
 
+  // 关键参数高亮：带单位/比较符/区间/百分比的数字，以及常考的固定写法
+  const UNIT = "(?:%|％|MB|GB|KB|TB|周|天|小时|分钟|秒|个月|月|年|个|条|次|人|步|层|类|项|倍|万|元|字|轮|分|名|道|张|套|题|ms)";
+  const NUM = "\\d+(?:\\.\\d+)?";
+  const HL_RE = new RegExp(
+    "(?:UTF-8|GBK|Top\\s?K|OAuth\\s?2\\.[01]|PKCE|P0|P1|P2)" + "|" +
+    "(?<![A-Za-z\\d.\\-/_])(?:(?:[≤≥＜＞]|&lt;=?|&gt;=?|不超过|至少|超过|低于|高于)\\s*" + NUM + "(?:\\s*[~～–—-]\\s*" + NUM + ")?\\s*" + UNIT + "?" +
+    "|" + NUM + "\\s*[~～–—-]\\s*" + NUM + "\\s*" + UNIT + "?" +
+    "|" + NUM + "\\s*" + UNIT + ")(?![A-Za-z\\d])", "g");
+  const hl = (t) => esc(t).replace(HL_RE, (m) => `<mark class="kv">${m}</mark>`);
+
   // 要点：「标题：内容」把标题加粗
-  const pointHtml = (p) => { const m = String(p).match(/^([^：:]{1,16})[：:](.+)$/); return m ? `<b>${esc(m[1])}</b>${esc(m[2])}` : esc(p); };
+  const pointHtml = (p) => { const m = String(p).match(/^([^：:]{1,16})[：:](.+)$/); return m ? `<b>${esc(m[1])}</b>${hl(m[2])}` : hl(p); };
 
   function backHtml(g) {
     const rel = related(g);
     const more = [
       (g.points || []).length ? `<div class="cm-sec"><span class="cb-tag t-pt">${ic("list")}要点</span><ol class="cb-points">${g.points.map((p) => `<li>${pointHtml(p)}</li>`).join("")}</ol></div>` : "",
-      g.example ? `<div class="cm-sec"><span class="cb-tag t-ex">${ic("chat")}举个例子</span><p>${esc(g.example)}</p></div>` : "",
+      g.example ? `<div class="cm-sec"><span class="cb-tag t-ex">${ic("chat")}举个例子</span><p>${hl(g.example)}</p></div>` : "",
       g.analogy ? `<div class="cm-sec"><span class="cb-tag t-ana">${ic("bulb")}类比</span><p>${esc(g.analogy)}</p></div>` : "",
       g.confuse ? `<div class="cm-sec"><span class="cb-tag t-conf">${ic("alert")}易混</span><p>${esc(g.confuse)}</p></div>` : "",
     ].join("");
     return `
       <p class="cb-plain">${esc(g.plain)}</p>
       ${visualHtml(g.visual, g)}
+      ${(g.keys || []).length ? `<div class="cb-keys"><span class="ck-h">${ic("target")}关键参数</span><div class="ck-list">${g.keys.map((k) => `<div class="ck"><b>${esc(k.v)}</b><span>${esc(k.k)}</span></div>`).join("")}</div></div>` : ""}
       ${g.mnemonic ? `<p class="cb-mn"><span>口诀</span>${esc(g.mnemonic)}</p>` : ""}
       <details class="cb-more"${moreOpen ? " open" : ""}><summary>详细说明<em>要点 · 例子 · 类比 · 易混</em></summary><div class="cm-body">${more}</div></details>
       <p class="cb-foot"><span class="cb-src">${ic("book")}出处：${esc(g.src)}</span>${rel.length ? `<button type="button" class="link cb-rel" data-id="${g.id}">练相关题（${rel.length}）→</button>` : ""}</p>`;

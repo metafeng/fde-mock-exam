@@ -674,3 +674,15 @@ body.in-exam .acct{display:none}
   .cb-more summary em{display:none}
 }
 .cb-more,.cb-more[open]{border-radius:0}
+/* 关键参数 */
+mark.kv{background:linear-gradient(transparent 55%,#ffe58a 55%);color:inherit;font-weight:700;padding:0 1px;border-radius:2px}
+.cb-keys{margin:0 0 14px}
+.ck-h{display:inline-flex;align-items:center;gap:5px;font-size:12.5px;font-weight:700;color:#b4580b;margin-bottom:8px}
+.ck-h .ic{width:14px;height:14px}
+.ck-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(132px,1fr));gap:8px}
+.ck{background:#fffaf0;border:1px solid #ffe2b0;border-radius:12px;padding:10px 12px;display:flex;flex-direction:column;gap:2px;min-width:0}
+.ck b{font-size:19px;line-height:1.25;color:#c25a00;letter-spacing:-.01em;word-break:break-word}
+.ck span{font-size:12px;color:var(--ink-2)}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) mark.kv{background:linear-gradient(transparent 55%,#6b5310 55%)}:root:not([data-theme="light"]) .ck{background:#2e2414;border-color:#5a4220}:root:not([data-theme="light"]) .ck b{color:#ffbf70}}
+@media (max-width:820px){.ck-list{grid-template-columns:repeat(2,1fr)}.ck b{font-size:17px}}
+@media (max-width:820px){.ck{padding:8px 10px;border-radius:10px}.ck b{font-size:15.5px}.ck span{font-size:11.5px}}
