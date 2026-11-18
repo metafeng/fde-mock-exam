@@ -166,22 +166,21 @@
     pop.querySelectorAll("[data-open]").forEach((b) => (b.onclick = (ev) => { ev.stopPropagation(); openTerm(b.dataset.open); }));
   }, true);
 
-  // 出处：解析「第 1 章 1.3；第 12 章 Q2、Q3」，显示章名和小节标题，点击跳到飞书原文对应标题
+  // 出处：只显示「小节号 + 小节名」（章名放在悬停提示里，避免和模块标签重复），点击跳到飞书原文对应标题
   function srcHtml(src) {
-    const S = window.SOURCES || {};
-    const out = String(src || "").split(/[；;]/).map((part) => {
-      const m = part.match(/第\s*(\d+)\s*章(.*)/); if (!m) return part.trim() ? `<span class="src-x">${esc(part.trim())}</span>` : "";
+    const S = window.SOURCES || {}, links = [];
+    String(src || "").split(/[；;]/).forEach((part) => {
+      const m = part.match(/第\s*(\d+)\s*章(.*)/); if (!m) return;
       const ch = S[m[1]], toks = m[2].match(/\d+\.\d+|Q\d+/g) || [];
-      if (!ch) return `<span class="src-x">${esc(part.trim())}</span>`;
+      if (!ch) return;
       const chName = `第 ${m[1]} 章 ${ch.t || ""}`.trim();
-      const link = (href, label, title) => `<a class="src-a" href="${href}" target="_blank" rel="noopener" title="${esc(title)}">${esc(label)}</a>`;
-      if (!toks.length) return `<span class="src-g">${link(ch.url, chName, "打开" + chName + "原文")}</span>`;
-      return `<span class="src-g"><span class="src-ch">${esc(chName)}</span>${toks.map((t) => {
+      if (!toks.length) { links.push([ch.url, `第 ${m[1]} 章`, chName]); return; }
+      toks.forEach((t) => {
         const a = ch.a[t] || [], name = a[1] || "";
-        return link(ch.url + (a[0] ? "#" + a[0] : ""), name ? `${t} ${name}` : t, `打开原文：${chName} · ${t} ${name}`);
-      }).join("")}</span>`;
-    }).filter(Boolean);
-    return out.length ? `<div class="cb-src2">${out.map((o) => `<div class="src-row">${ic("book")}${o}</div>`).join("")}</div>` : "";
+        links.push([ch.url + (a[0] ? "#" + a[0] : ""), `${/^Q/.test(t) ? "FAQ " : ""}${t} ${name}`.trim(), `${chName} · ${t} ${name}`]);
+      });
+    });
+    return links.map(([href, label, title]) => `<a class="src-a" href="${href}" target="_blank" rel="noopener" title="打开原文：${esc(title)}">${ic("book")}<span>${esc(label)}</span></a>`).join("");
   }
 
   function backHtml(g) {
@@ -236,7 +235,7 @@
           ${(g.aliases || []).length ? `<p class="cf-alias">${g.aliases.map(esc).join(" · ")}</p>` : ""}
           <p class="cf-hint">先想一想它是什么意思，再点卡片看答案</p>
         </div>
-        <div class="flash-back"><div class="cb-head">${tile(g)}<div><h3>${esc(g.term)}</h3><div class="cb-meta"><span class="cf-mod">${esc(MODULES[g.m][0])}</span></div>${srcHtml(g.src)}</div></div>${backHtml(g)}</div>
+        <div class="flash-back"><div class="cb-head">${tile(g)}<div><h3>${esc(g.term)}</h3><div class="cb-meta"><span class="cf-mod">${esc(MODULES[g.m][0])}</span>${srcHtml(g.src)}</div></div></div>${backHtml(g)}</div>
       </div>
       <div class="cv-act">
         ${flipped
@@ -276,7 +275,7 @@
         ${items.map((g) => { const k = s[g.id] && s[g.id].k === 1; return `
           <details class="cl-item ${k ? "known" : ""}">
             <summary><span class="cl-term">${tile(g, "sm")}<span>${esc(g.term)}</span></span><span class="cl-plain">${esc(g.plain)}</span>${g.mnemonic ? `<span class="cl-mn">${esc(g.mnemonic)}</span>` : ""}</summary>
-            <div class="cl-body">${srcHtml(g.src)}${backHtml(g)}
+            <div class="cl-body"><div class="cb-meta cl-src">${srcHtml(g.src)}</div>${backHtml(g)}
               <div class="cl-act"><button type="button" class="btn ${k ? "" : "primary"}" data-k="${g.id}">${k ? "标为没掌握" : "标为已掌握"}</button></div>
             </div>
           </details>`; }).join("")}
