@@ -61,17 +61,24 @@ const SECRET = fs.readFileSync(SECRET_FILE, "utf8").trim();
 
 // ---- 会话：用户名.过期时间.签名 ----
 const sign = (s) => crypto.createHmac("sha256", SECRET).update(s).digest("base64url");
-const makeToken = (user) => { const body = `${Buffer.from(user).toString("base64url")}.${Math.floor(Date.now() / 1000) + MAX_AGE}`; return `${body}.${sign(body)}`; };
+// 签名里带上该账号密码哈希的盐：改密码后盐变了，其他设备上的旧会话自动失效
+const pwSalt = (user) => String(readUsers()[user] || "").split("$")[1] || "";
+const makeToken = (user) => {
+  const body = `${Buffer.from(user).toString("base64url")}.${Math.floor(Date.now() / 1000) + MAX_AGE}`;
+  return `${body}.${sign(`${body}.${pwSalt(user)}`)}`;
+};
 function readToken(cookieHeader = "") {
   const m = cookieHeader.match(new RegExp(`(?:^|;\\s*)${COOKIE}=([^;]+)`));
   if (!m) return null;
   const [u, exp, sig] = m[1].split(".");
   if (!u || !exp || !sig) return null;
-  const expect = sign(`${u}.${exp}`);
+  const user = Buffer.from(u, "base64url").toString();
+  const salt = pwSalt(user);
+  if (!salt) return null; // 账号不存在或已删除
+  const expect = sign(`${u}.${exp}.${salt}`);
   if (sig.length !== expect.length || !crypto.timingSafeEqual(Buffer.from(sig), Buffer.from(expect))) return null;
   if (Number(exp) < Date.now() / 1000) return null;
-  const user = Buffer.from(u, "base64url").toString();
-  return readUsers()[user] ? user : null; // 账号被删除后会话立即失效
+  return user;
 }
 
 // ---- 失败次数限制：同一 IP 10 分钟内最多错 8 次 ----
@@ -168,6 +175,35 @@ http.createServer((req, res) => {
   const ip = req.headers["x-real-ip"] || req.socket.remoteAddress;
 
   if (url.pathname === "/api/state") return handleState(req, res, url);
+
+  if (url.pathname === "/api/me") {
+    const user = readToken(req.headers.cookie);
+    return user ? sendJSON(res, 200, { user }) : sendJSON(res, 401, { error: "unauthorized" });
+  }
+
+  if (url.pathname === "/api/password" && req.method === "POST") {
+    const user = readToken(req.headers.cookie);
+    if (!user) return sendJSON(res, 401, { error: "请重新登录" });
+    let body = "";
+    req.on("data", (c) => { body += c; if (body.length > 4096) req.destroy(); });
+    req.on("end", () => {
+      let p; try { p = JSON.parse(body); } catch { return sendJSON(res, 400, { error: "请求格式不对" }); }
+      if (tooMany(ip)) return sendJSON(res, 429, { error: "尝试次数过多，请 10 分钟后再试" });
+      const users = readUsers();
+      if (!checkPw(String(p.old || ""), users[user])) { addFail(ip); return sendJSON(res, 400, { error: "当前密码不正确" }); }
+      const nw = String(p.new || "");
+      if (nw.length < 8) return sendJSON(res, 400, { error: "新密码至少 8 位" });
+      if (nw.length > 200) return sendJSON(res, 400, { error: "新密码太长" });
+      if (nw === p.old) return sendJSON(res, 400, { error: "新密码不能和当前密码相同" });
+      users[user] = hashPw(nw);
+      writeUsers(users);
+      fails.delete(ip);
+      // 当前设备换发新会话，其他设备的旧会话因盐改变而失效
+      res.writeHead(200, { "Content-Type": "application/json; charset=utf-8", "Cache-Control": "no-store", "Set-Cookie": cookie(makeToken(user), MAX_AGE) });
+      res.end(JSON.stringify({ ok: true }));
+    });
+    return;
+  }
 
   if (url.pathname === "/verify") { res.writeHead(readToken(req.headers.cookie) ? 204 : 401); return res.end(); }
 

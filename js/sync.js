@@ -8,7 +8,8 @@
   const KEYS = ["fde-mock-qstat", "fde-mock-wrong", "fde-mock-hist", "fde-mock-seen", "fde-mock-topic", "fde-mock-mode", "fde-mock-v2", "fde-mock-cards"];
   const META_KEY = "fde-sync-meta"; // 每个 key 的本地修改时间
   const REV_KEY = "fde-sync-rev";   // 本地已同步到的服务器版本号
-  const APP_SCRIPTS = ["js/questions.js", "js/glossary.js", "js/app.js", "js/topic.js", "js/cards.js"];
+  const OWNER_KEY = "fde-sync-user"; // 本地缓存属于哪个账号
+  const APP_SCRIPTS = ["js/questions.js", "js/glossary.js", "js/app.js", "js/topic.js", "js/cards.js", "js/account.js"];
 
   const ls = window.localStorage;
   const rawSet = Storage.prototype.setItem, rawRemove = Storage.prototype.removeItem;
@@ -67,6 +68,12 @@
     return { data, meta: loadMeta() };
   }
 
+  // 清掉本地缓存的练习数据（退出登录、或换了账号时）
+  function clearLocal() {
+    KEYS.concat([META_KEY, REV_KEY, OWNER_KEY]).forEach((k) => { try { rawRemove.call(ls, k); } catch (e) {} });
+    rev = 0;
+  }
+
   // ---- 上传 ----
   async function push() {
     if (!enabled) return;
@@ -119,6 +126,10 @@
       if (!r.ok || !ct.includes("json")) throw new Error("no-sync");
       const remote = await r.json();
       enabled = true;
+      const owner = get(OWNER_KEY);
+      if (owner && remote.user && owner !== remote.user) clearLocal(); // 上一个登录的是别的账号：不能把他的数据并进来
+      if (remote.user) put(OWNER_KEY, remote.user);
+      window.FDE_USER = remote.user || null;
       const needPush = mergeIntoLocal(remote);
       rev = remote.rev; put(REV_KEY, String(rev));
       status(remote.user ? `已同步 · ${remote.user}` : "已同步", "ok");
@@ -149,6 +160,14 @@
     else checkRemote();
   });
   window.addEventListener("online", () => { if (enabled) push(); });
+
+  // 给账号菜单用：退出登录前先把没传完的进度传上去，再清空本地缓存
+  window.fdeSync = {
+    async flushAndClear() {
+      if (enabled) { clearTimeout(timer); timer = null; try { await push(); } catch (e) {} }
+      clearLocal();
+    },
+  };
 
   boot();
 })();

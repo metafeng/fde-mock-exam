@@ -18,8 +18,16 @@
     <button class="btn" id="quickBtn" hidden title="不弹确认，立即交卷并显示全部答案">一键交卷</button>
     <button class="btn primary" id="submitBtn" hidden>交卷</button>
     <button class="btn" id="exitBtn" hidden>退出</button>
-    <span class="sync-state" id="syncState" hidden></span>
-    <a class="link logout" id="logoutLink" href="/logout" hidden>退出登录</a>
+    <div class="acct" id="acct" hidden>
+      <button type="button" class="acct-btn" id="acctBtn" aria-haspopup="menu" aria-expanded="false">
+        <span class="acct-av" id="acctAv"></span><span class="acct-name" id="acctName"></span><span class="acct-dot" id="acctDot"></span>
+      </button>
+      <div class="acct-menu" id="acctMenu" role="menu" hidden>
+        <div class="am-head"><span class="acct-av big" id="amAv"></span><div><b id="amEmail"></b><span class="sync-state" id="syncState"></span></div></div>
+        <button type="button" role="menuitem" id="amPw">修改密码</button>
+        <button type="button" role="menuitem" id="amLogout" class="danger">退出登录</button>
+      </div>
+    </div>
   </div>
 </header>
 
@@ -170,6 +178,20 @@
     <p>题目根据公开课程资料自行整理，仅供学习交流，不代表官方考试真题或评分标准；考试信息以腾讯云培训认证官网为准。</p>
   </div>
 </footer>
+
+<div class="modal" id="pwModal" hidden>
+  <form class="modal-box pw-box" id="pwForm" autocomplete="on">
+    <h3>修改密码</h3>
+    <p>改完后，其他设备上的登录会失效，需要用新密码重新登录；当前设备保持登录。</p>
+    <label for="pwOld">当前密码</label><input id="pwOld" type="password" autocomplete="current-password" required>
+    <label for="pwNew">新密码</label><input id="pwNew" type="password" autocomplete="new-password" minlength="8" required placeholder="至少 8 位">
+    <label for="pwNew2">确认新密码</label><input id="pwNew2" type="password" autocomplete="new-password" minlength="8" required>
+    <div class="pw-err" id="pwErr" hidden></div>
+    <div class="row"><button type="button" class="btn" id="pwCancel">取消</button><button type="submit" class="btn primary" id="pwOk">确认修改</button></div>
+  </form>
+</div>
+
+<div class="toast" id="toast" hidden></div>
 
 <div class="modal" id="exitModal" hidden>
   <div class="modal-box">

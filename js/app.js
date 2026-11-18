@@ -102,7 +102,7 @@ function show(view) {
   ["startView", "cardView", "examView", "resultView"].forEach((v) => ($("#" + v).hidden = v !== view));
   if (view === "startView") homeStep(1);
   const exam = view === "examView";
-  $("#timer").hidden = !exam; $("#submitBtn").hidden = !exam; $("#quickBtn").hidden = !exam; $("#exitBtn").hidden = view === "startView"; document.body.classList.toggle("in-exam", exam); $("#logoutLink").hidden = !(view === "startView" && /metafeng\.com$/.test(location.hostname)); $("#progress").hidden = !exam;
+  $("#timer").hidden = !exam; $("#submitBtn").hidden = !exam; $("#quickBtn").hidden = !exam; $("#exitBtn").hidden = view === "startView"; $("#exitBtn").textContent = exam ? "退出答题" : "返回首页"; document.body.classList.toggle("in-exam", exam); $("#progress").hidden = !exam;
   document.querySelectorAll(".lg-practice").forEach((el) => (el.hidden = !(exam && practice())));
   window.scrollTo(0, 0);
 }
@@ -429,5 +429,4 @@ if (prev && prev.ids && prev.ids.every((i) => BANK[i])) {
 }
 renderDist();
 renderHome();
-$("#logoutLink").hidden = !/metafeng\.com$/.test(location.hostname);
 if (innerWidth > 820) $("#sheet").classList.remove("collapsed");
