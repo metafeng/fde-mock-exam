@@ -139,6 +139,19 @@
       `<li class="${i === w.at ? "on" : i < w.at ? "past" : ""}"${i === w.at ? ` style="background:linear-gradient(145deg,${c[0]},${c[1]})"` : ""}><span>${esc(p)}</span>${i === w.at && w.label ? `<em>${esc(w.label)}</em>` : ""}</li>`).join("")}</ol></div>`;
   }
 
+  // 出处：解析「第 1 章 1.3；第 12 章 Q2、Q3」，每个小节 / 问题链接到飞书原文对应标题
+  function srcHtml(src) {
+    const S = window.SOURCES || {};
+    return String(src || "").split(/[；;]/).map((part) => {
+      const m = part.match(/第\s*(\d+)\s*章(.*)/); if (!m) return esc(part.trim());
+      const ch = S[m[1]], toks = m[2].match(/\d+\.\d+|Q\d+/g) || [];
+      if (!ch) return esc(part.trim());
+      const link = (href, label, title) => `<a class="src-a" href="${href}" target="_blank" rel="noopener" title="${esc(title)}">${esc(label)}</a>`;
+      if (!toks.length) return link(ch.url, `第 ${m[1]} 章`, `打开第 ${m[1]} 章原文`);
+      return `<span class="src-ch">第 ${m[1]} 章</span>` + toks.map((t) => link(ch.url + (ch.a[t] ? "#" + ch.a[t] : ""), t, `打开第 ${m[1]} 章 ${t} 原文`)).join("");
+    }).join('<span class="src-sep">；</span>');
+  }
+
   function backHtml(g) {
     const rel = related(g);
     const more = [
@@ -156,7 +169,7 @@
       ${g.trap ? `<p class="cb-trap">${ic("alert")}<span class="ct-h">易错</span><span>${hl(g.trap)}</span></p>` : ""}
       ${g.mnemonic ? `<p class="cb-mn"><span>口诀</span>${esc(g.mnemonic)}</p>` : ""}
       <details class="cb-more"${moreOpen ? " open" : ""}><summary>详细说明<em>要点 · 例子 · 类比 · 易混</em></summary><div class="cm-body">${more}</div></details>
-      <p class="cb-foot"><span class="cb-src">${ic("book")}出处：${esc(g.src)}</span>${rel.length ? `<button type="button" class="link cb-rel" data-id="${g.id}">练相关题（${rel.length}）→</button>` : ""}</p>`;
+      <p class="cb-foot"><span class="cb-src">${ic("book")}出处：${srcHtml(g.src)}</span>${rel.length ? `<button type="button" class="link cb-rel" data-id="${g.id}">练相关题（${rel.length}）→</button>` : ""}</p>`;
   }
   document.addEventListener("toggle", (e) => { if (e.target.classList && e.target.classList.contains("cb-more")) moreOpen = e.target.open; }, true);
 

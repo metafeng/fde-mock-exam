@@ -763,3 +763,11 @@ mark.kv{background:linear-gradient(transparent 55%,#ffe58a 55%);color:inherit;fo
   .cv-search:focus-within{position:absolute;top:16px;right:14px;width:calc(100% - 28px);height:32px;margin:0}
   .cv-search input::placeholder{font-size:12.5px}
 }
+/* 出处链接 */
+.cb-src{display:inline-flex;align-items:center;flex-wrap:wrap;gap:4px}
+.src-ch{margin-left:2px}
+.src-a{display:inline-flex;align-items:center;gap:2px;padding:1px 7px;border-radius:6px;background:#eef4ff;color:var(--accent);font-weight:600;text-decoration:none;font-size:12px;line-height:1.6}
+.src-a::after{content:"↗";font-size:10px;opacity:.7}
+.src-a:hover{background:var(--accent);color:#fff}
+.src-sep{color:var(--muted);margin:0 2px}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .src-a{background:#1b2a45}}
