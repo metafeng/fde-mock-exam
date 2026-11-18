@@ -246,6 +246,72 @@
 
   function render() { renderHead(); P.view === "list" ? renderList() : renderCard(); }
 
+  // ---- 搜索：在全部 139 个术语里找，点开直接看背面 ----
+  const norm = (t) => String(t || "").toLowerCase().replace(/[\s·・\-_/／（）()「」【】:：,，.。]/g, "");
+  function searchTerms(q) {
+    const nq = norm(q); if (!nq) return [];
+    const res = [];
+    for (const g of G) {
+      const fields = [
+        [g.term, 100], ...(g.aliases || []).map((a) => [a, 80]), ...(g.words || []).map((w) => [w.w, 60]),
+        ...(g.keys || []).map((k) => [k.v + " " + k.k, 35]), [g.plain, 30], ...(g.words || []).map((w) => [w.e, 20]),
+        [(g.points || []).join(" "), 10], [g.example, 6],
+      ];
+      let best = 0, hit = "";
+      for (const [txt, w] of fields) {
+        const n = norm(txt); if (!n) continue;
+        const i = n.indexOf(nq); if (i < 0) continue;
+        const sc = w + (i === 0 ? 15 : 0) + (n === nq ? 30 : 0);
+        if (sc > best) { best = sc; hit = String(txt); }
+      }
+      if (best) res.push({ g, sc: best, hit });
+    }
+    return res.sort((a, b) => b.sc - a.sc || priority(b.g) - priority(a.g)).slice(0, 8);
+  }
+  // 摘要里把命中的关键词标出来
+  function snippet(txt, q) {
+    const t = String(txt), lo = t.toLowerCase(), i = lo.indexOf(String(q).trim().toLowerCase());
+    if (i < 0) return esc(t.length > 40 ? t.slice(0, 40) + "…" : t);
+    const a = Math.max(0, i - 14), b = Math.min(t.length, i + q.trim().length + 24);
+    return (a ? "…" : "") + esc(t.slice(a, i)) + `<mark>${esc(t.slice(i, i + q.trim().length))}</mark>` + esc(t.slice(i + q.trim().length, b)) + (b < t.length ? "…" : "");
+  }
+  function openTerm(id) {
+    const g = G.find((x) => x.id === id); if (!g) return;
+    P.view = "card"; store(PREF_KEY, P);
+    const i = queue.indexOf(g);
+    if (i >= 0) pos = i; else { if (pos > queue.length) pos = queue.length; queue.splice(pos, 0, g); }
+    flipped = true; render();
+    const f = $("#flash"); if (f) f.scrollIntoView({ block: "start", behavior: "smooth" });
+  }
+  (function initSearch() {
+    const q = $("#cvQ"), list = $("#cvRes"); if (!q) return;
+    let cur = -1, items = [];
+    const close = () => { list.hidden = true; q.setAttribute("aria-expanded", "false"); cur = -1; };
+    const paint = () => list.querySelectorAll("li[data-id]").forEach((li, i) => li.classList.toggle("on", i === cur));
+    const draw = () => {
+      const v = q.value.trim();
+      if (!v) { close(); return; }
+      items = searchTerms(v); cur = items.length ? 0 : -1;
+      list.innerHTML = items.length ? items.map(({ g, hit }) => `<li data-id="${g.id}" role="option">${tile(g, "sm")}<div><b>${snippet(g.term, v)}</b><span class="cr-mod">${esc(MODULES[g.m][0])}</span><p>${hit === g.term || hit.length <= 14 ? esc(g.plain) : snippet(hit, v)}</p></div></li>`).join("")
+        : `<li class="cr-empty">没有找到「${esc(v)}」相关的术语，换个关键词试试</li>`;
+      list.hidden = false; q.setAttribute("aria-expanded", "true"); paint();
+      list.querySelectorAll("li[data-id]").forEach((li) => (li.onmousedown = (e) => { e.preventDefault(); pick(li.dataset.id); }));
+    };
+    const pick = (id) => { close(); q.blur(); openTerm(id); };
+    q.addEventListener("input", draw);
+    q.addEventListener("focus", () => { if (q.value.trim()) draw(); });
+    q.addEventListener("blur", () => setTimeout(close, 120));
+    q.addEventListener("keydown", (e) => {
+      if (e.key === "ArrowDown" && items.length) { e.preventDefault(); cur = (cur + 1) % items.length; paint(); }
+      else if (e.key === "ArrowUp" && items.length) { e.preventDefault(); cur = (cur - 1 + items.length) % items.length; paint(); }
+      else if (e.key === "Enter" && cur >= 0 && items[cur]) { e.preventDefault(); pick(items[cur].g.id); }
+      else if (e.key === "Escape") { e.preventDefault(); if (q.value) { q.value = ""; close(); } else q.blur(); }
+    });
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "/" && !$("#cardView").hidden && !/INPUT|TEXTAREA/.test(document.activeElement.tagName)) { e.preventDefault(); q.focus(); q.select(); }
+    });
+  })();
+
   function openCards() { buildQueue(); render(); show("cardView"); window.scrollTo(0, 0); }
 
   // 首页入口上的进度
