@@ -53,11 +53,13 @@
   function buildQueue() {
     const s = st();
     let list = pool().slice();
-    if (P.filter === "new") list = list.filter((g) => !(s[g.id] && s[g.id].k === 1));
+    if (P.filter === "new") list = list.filter((g) => !(s[g.id] && s[g.id].k === 2));
     // 标过「不认识」的排最前，其次没看过的，组内按优先级
     list.sort((a, b) => {
       if (P.multi && a.mc && b.mc && a.mc.list !== b.mc.list) return a.mc.list ? -1 : 1;
-      const ra = s[a.id] ? (s[a.id].k === 0 ? 0 : 2) : 1, rb = s[b.id] ? (s[b.id].k === 0 ? 0 : 2) : 1;
+      // 不认识的最先出现，其次没看过的，再次「认识」的，最后「掌握」的
+      const rank = (x) => (s[x.id] ? [0, 2, 3][s[x.id].k] ?? 2 : 1);
+      const ra = rank(a), rb = rank(b);
       return ra - rb || priority(b) - priority(a);
     });
     queue = list; pos = 0; flipped = false;
@@ -65,19 +67,19 @@
 
   function mark(g, known) {
     const s = st(), o = s[g.id] || { n: 0 };
-    o.n++; o.k = known ? 1 : 0; o.t = Date.now(); s[g.id] = o; store(CARD_KEY, s);
+    o.n++; o.k = typeof known === "number" ? known : known ? 1 : 0; o.t = Date.now(); s[g.id] = o; store(CARD_KEY, s);
   }
 
   // ---- 头部：标题、进度、模块筛选 ----
   function renderHead() {
-    const s = st(), all = pool(), known = all.filter((g) => s[g.id] && s[g.id].k === 1).length;
-    const totalKnown = G.filter((g) => s[g.id] && s[g.id].k === 1).length;
-    $("#cvSummary").innerHTML = `${P.mod === "all" ? "全部模块" : MODULES[+P.mod][0]}：已掌握 <b>${known}</b> / ${all.length}　·　总计 ${totalKnown} / ${G.length}`;
+    const s = st(), all = pool(), known = all.filter((g) => s[g.id] && s[g.id].k === 2).length, seen = all.filter((g) => s[g.id] && s[g.id].k === 1).length;
+    const totalKnown = G.filter((g) => s[g.id] && s[g.id].k === 2).length;
+    $("#cvSummary").innerHTML = `${P.mod === "all" ? "全部模块" : MODULES[+P.mod][0]}：掌握 <b>${known}</b> · 认识 <b>${seen}</b> / ${all.length}　·　总计掌握 ${totalKnown} / ${G.length}`;
     $("#cvBar").style.width = (all.length ? (known / all.length) * 100 : 0) + "%";
     const chip = (v, label, sub) => `<button type="button" data-mod="${v}" class="${String(P.mod) === String(v) ? "on" : ""}">${label}<small>${sub}</small></button>`;
     $("#cvMods").innerHTML = chip("all", "全部", `${totalKnown}/${G.length}`) + MODULES.map((md, m) => {
       const ts = G.filter((g) => g.m === m); if (!ts.length) return "";
-      const k = ts.filter((g) => s[g.id] && s[g.id].k === 1).length;
+      const k = ts.filter((g) => s[g.id] && s[g.id].k === 2).length;
       return chip(m, md[0], `${k}/${ts.length}`);
     }).join("");
     $("#cvMods").querySelectorAll("button").forEach((b) => (b.onclick = () => { P.mod = b.dataset.mod; store(PREF_KEY, P); buildQueue(); render(); }));
@@ -363,7 +365,7 @@
     }
     if (pos >= queue.length) pos = 0;
     const g = queue[pos], s = st()[g.id];
-    const badge = s ? (s.k === 1 ? `<span class="cf-badge ok">已掌握</span>` : `<span class="cf-badge no">不认识 ×${s.n}</span>`) : `<span class="cf-badge">新</span>`;
+    const badge = s ? (s.k === 2 ? `<span class="cf-badge ok">已掌握</span>` : s.k === 1 ? `<span class="cf-badge seen">认识</span>` : `<span class="cf-badge no">不认识 ×${s.n}</span>`) : `<span class="cf-badge">新</span>`;
     body.innerHTML = `
       <div class="cv-count">第 ${pos + 1} / ${queue.length} 张</div>
       <div class="flash ${flipped ? "flipped" : ""}" id="flash" tabindex="0" role="button" aria-label="翻面">
@@ -378,10 +380,10 @@
       </div>
       <div class="cv-act">
         ${flipped
-          ? `<button type="button" class="btn act-no" id="cvNo">不认识，等会再看</button><button type="button" class="btn primary act-ok" id="cvOk">认识了</button>`
+          ? `<button type="button" class="btn act-no" id="cvNo">不认识<small>等会再看</small></button><button type="button" class="btn act-seen" id="cvSeen">认识<small>稍后复习</small></button><button type="button" class="btn primary act-ok" id="cvOk">掌握<small>不再出现</small></button>`
           : `<button type="button" class="btn primary act-flip" id="cvFlip">看答案</button>`}
       </div>
-      <p class="cv-keys">快捷键：空格翻面　← 不认识　→ 认识了</p>`;
+      <p class="cv-keys">快捷键：空格翻面　← 不认识　→ 认识　↑ 掌握</p>`;
     // 正面：点哪里都翻面；背面：只有点标题行才翻回去，点「展开详细说明」、图解、文字都不翻面
     $("#flash").onclick = (e) => {
       if (e.target.closest(".cb-rel, .cb-more, .cb-where, .cw-pop, .cb-img, .cb-table, a, button")) return;
@@ -390,17 +392,20 @@
       flipped = !flipped; renderCard();
     };
     const f = $("#cvFlip"); if (f) f.onclick = () => { flipped = true; renderCard(); };
-    const no = $("#cvNo"); if (no) no.onclick = () => answer(false);
-    const ok = $("#cvOk"); if (ok) ok.onclick = () => answer(true);
+    const no = $("#cvNo"); if (no) no.onclick = () => answer(0);
+    const sn = $("#cvSeen"); if (sn) sn.onclick = () => answer(1);
+    const ok = $("#cvOk"); if (ok) ok.onclick = () => answer(2);
     body.querySelectorAll(".cb-rel").forEach((b) => (b.onclick = (e) => { e.stopPropagation(); practiceRelated(b.dataset.id); }));
   }
 
-  function answer(known) {
+  // level：0 不认识（隔 4 张再出现）/ 1 认识（排到队尾继续复习）/ 2 掌握（「只看没掌握」里不再出现）
+  function answer(level) {
     const g = queue[pos];
-    mark(g, known);
-    if (known && P.filter === "new") queue.splice(pos, 1);
-    else if (!known) { queue.splice(pos, 1); queue.splice(Math.min(pos + 4, queue.length), 0, g); } // 不认识：隔几张再出现
-    else pos++;
+    mark(g, level);
+    queue.splice(pos, 1);
+    if (level === 0) queue.splice(Math.min(pos + 4, queue.length), 0, g);
+    else if (level === 1) { if (P.filter === "new") queue.push(g); else { queue.splice(pos, 0, g); pos++; } }
+    else if (P.filter !== "new") { queue.splice(pos, 0, g); pos++; }
     flipped = false;
     renderHead(); renderCard();
   }
@@ -410,19 +415,22 @@
     const s = st();
     const groups = MODULES.map((md, m) => ({ m, items: queue.filter((g) => g.m === m) })).filter((x) => x.items.length);
     $("#cvBody").innerHTML = groups.length ? groups.map(({ m, items }) => `
-      <section class="cl-group"><h4>${esc(MODULES[m][0])}<small>${items.filter((g) => s[g.id] && s[g.id].k === 1).length} / ${items.length} 已掌握</small></h4>
-        ${items.map((g) => { const k = s[g.id] && s[g.id].k === 1; return `
+      <section class="cl-group"><h4>${esc(MODULES[m][0])}<small>${items.filter((g) => s[g.id] && s[g.id].k === 2).length} / ${items.length} 已掌握</small></h4>
+        ${items.map((g) => { const lv = s[g.id] ? s[g.id].k : -1, k = lv === 2; return `
           <details class="cl-item ${k ? "known" : ""}">
-            <summary>${tile(g, "sm")}<div class="cl-main"><b>${esc(g.term)}${k ? `<i class="cl-ok" title="已掌握">✓</i>` : ""}${mcBadge(g)}</b><span>${esc(g.plain)}</span></div>${g.mnemonic ? `<span class="cl-mn" title="${esc(g.mnemonic)}">${esc(g.mnemonic)}</span>` : ""}<span class="cl-chev" aria-hidden="true"></span></summary>
+            <summary>${tile(g, "sm")}<div class="cl-main"><b>${esc(g.term)}${k ? `<i class="cl-ok" title="已掌握">✓</i>` : lv === 1 ? `<i class="cl-seen" title="认识">认识</i>` : lv === 0 ? `<i class="cl-no" title="不认识">不认识</i>` : ""}${mcBadge(g)}</b><span>${esc(g.plain)}</span></div>${g.mnemonic ? `<span class="cl-mn" title="${esc(g.mnemonic)}">${esc(g.mnemonic)}</span>` : ""}<span class="cl-chev" aria-hidden="true"></span></summary>
             <div class="cl-body"><div class="cb-meta cl-src">${srcHtml(g.src)}</div>${backHtml(g)}
-              <div class="cl-act"><button type="button" class="btn ${k ? "" : "primary"}" data-k="${g.id}">${k ? "标为没掌握" : "标为已掌握"}</button></div>
+              <div class="cl-act lv-btns" data-id="${g.id}">${["不认识", "认识", "掌握"].map((t, i) => `<button type="button" class="btn${lv === i ? " on" : ""}" data-lv="${i}">${t}</button>`).join("")}</div>
             </div>
           </details>`; }).join("")}
       </section>`).join("") : `<div class="cv-done"><b>没有需要复习的卡片</b><p>切到「全部」可以查看所有术语。</p></div>`;
-    $("#cvBody").querySelectorAll("[data-k]").forEach((b) => (b.onclick = () => {
-      const g = G.find((x) => x.id === b.dataset.k), cur = st()[g.id];
-      mark(g, !(cur && cur.k === 1)); renderHead();
-      const d = b.closest("details"); d.classList.toggle("known"); b.textContent = d.classList.contains("known") ? "标为没掌握" : "标为已掌握"; b.classList.toggle("primary");
+    $("#cvBody").querySelectorAll(".lv-btns [data-lv]").forEach((b) => (b.onclick = () => {
+      const box = b.closest(".lv-btns"), g = G.find((x) => x.id === box.dataset.id), lv = +b.dataset.lv;
+      mark(g, lv); renderHead();
+      box.querySelectorAll("button").forEach((x) => x.classList.toggle("on", x === b));
+      const it = box.closest("details"); it.classList.toggle("known", lv === 2);
+      const head = it.querySelector(".cl-main b"); head.querySelectorAll(".cl-ok,.cl-seen,.cl-no").forEach((x) => x.remove());
+      head.insertAdjacentHTML("beforeend", lv === 2 ? `<i class="cl-ok" title="已掌握">✓</i>` : lv === 1 ? `<i class="cl-seen">认识</i>` : `<i class="cl-no">不认识</i>`);
     }));
     $("#cvBody").querySelectorAll(".cb-rel").forEach((b) => (b.onclick = (e) => { e.preventDefault(); practiceRelated(b.dataset.id); }));
   }
@@ -500,7 +508,7 @@
   // 首页入口上的进度
   function updateEntry() {
     const el = $("#cardsEntrySub"); if (!el) return;
-    const s = st(), k = G.filter((g) => s[g.id] && s[g.id].k === 1).length;
+    const s = st(), k = G.filter((g) => s[g.id] && s[g.id].k === 2).length;
     el.textContent = G.length ? `${G.length} 个核心术语 · 已掌握 ${k} 个 · 大白话 + 类比 + 易混点 + 口诀` : "术语卡片整理中";
   }
   const _renderHome = window.renderHome;
@@ -510,8 +518,9 @@
   document.addEventListener("keydown", (e) => {
     if ($("#cardView").hidden || P.view !== "card" || !queue.length || /INPUT|TEXTAREA|SUMMARY|BUTTON/.test(document.activeElement.tagName)) return;
     if (e.key === " ") { e.preventDefault(); flipped = !flipped; renderCard(); }
-    else if (flipped && e.key === "ArrowLeft") answer(false);
-    else if (flipped && e.key === "ArrowRight") answer(true);
+    else if (flipped && (e.key === "ArrowLeft" || e.key === "1")) answer(0);
+    else if (flipped && (e.key === "ArrowRight" || e.key === "2")) answer(1);
+    else if (flipped && (e.key === "ArrowUp" || e.key === "3")) { e.preventDefault(); answer(2); }
   });
   updateEntry();
 })();
