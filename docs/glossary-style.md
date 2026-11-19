@@ -41,7 +41,7 @@
 
 另有 `example` 字段：2–3 句具体工作场景，收在「展开详细说明」里。
 
-用户反馈：卡片字太多、看着费劲。要改成「一眼看懂」的图标图解。例如「下发策略」= 三个图标块：白名单图标「白名单 / 只放行名单内」、黑名单图标「黑名单 / 拦截名单内」、默认图标「默认 / 新应用初始状态」。
+用户反馈：卡片字太多、看着费劲。要改成「一眼看懂」的图标图解。例如「12 周基准节奏」= 一张「阶段 × 周次」矩阵：四行是立项期、方案设计期、开发推进期、项目管理期，三列是「① 看 · 打基础 / ② 动手 / ③ 定稿 · 过 Gate」，每格一句话（如「W8 AI Coding 跑 POC」），第三列高亮四道 Gate；再配一张宫格写比例不变、立项 ≥ 2 周、可叠不可跳等规则。
 
 ## 只改 visual 字段，其他字段（plain、points、example 等）一律不动
 
@@ -63,3 +63,140 @@
 ## 图标库（只能用这些名字）
 user, users, loop, shield, shieldcheck, key, lock, door, flag, layers, trenddown, trendup, target, checklist, alert, search, funnel, steps, compass, bulb, plug, database, cloud, bot, code, palette, puzzle, coins, clock, calendar, book, file, chat, scale, valley, stop, sprout, megaphone, tools, toggle, list, server, rocket, cap, grid, gem, eye, zoom, swap, upload, music, listcheck, listx, ban, check, xcircle, gear, bell, mail, chart, money, hand, handshake, link, timer, trash, pen, send, inbox, archive, folder, tag, star, building, globe, cpu, terminal, api, workflow, sparkle, brain, ruler, flask, bug, wrench, refresh, play, pause, hourglass, thumbup, signature, badge, trophy, route, eyeoff, fingerprint, idcard, scroll, package, branch, home, phone, monitor, upgrade, minus, plus, question, split, merge, seed, megaphone2, glasses, mask, key2
 
+
+
+## 完整示例：12 周基准节奏
+
+这是字段最全的一张卡片，可以作为写新卡片的模板：
+
+- `visual` 用 `matrix`（阶段 × 周次矩阵，最后一列自动高亮）：`{"type": "matrix", "cols": [列名…], "rows": [{"t": 行名, "s": 副标题, "cells": [每格内容…]}], "note": 图下提示}`
+- `visual2` 是第二张图解（可选），这里用宫格补充规则
+- `where` 标出它在框架中的位置；`words` 拆解术语里的生词；`keys` 列关键参数；`trap` 写最常考的易错点
+
+```json
+{
+  "term": "12 周基准节奏",
+  "aliases": [
+    "周期调整",
+    "Sprint"
+  ],
+  "plain": "12 周是养成工作习惯的最短周期，可按项目伸缩，但四阶段比例不变、不能跳阶段。",
+  "words": [
+    {
+      "w": "基准节奏",
+      "e": "默认 12 周排期，项目长短不同时按比例伸缩"
+    },
+    {
+      "w": "Sprint",
+      "e": "冲刺：每两周交付一个可用软件增量的开发节奏"
+    }
+  ],
+  "visual": {
+    "type": "matrix",
+    "cols": [
+      "① 看 · 打基础",
+      "② 动手",
+      "③ 定稿 · 过 Gate"
+    ],
+    "rows": [
+      {
+        "t": "立项期",
+        "s": "W1–3",
+        "cells": [
+          "W1 全链路认知",
+          "W2 判真伪需求",
+          "W3 立项卡 · Gate 1"
+        ]
+      },
+      {
+        "t": "方案设计期",
+        "s": "W4–6",
+        "cells": [
+          "W4 竞品对标",
+          "W5 画原型定 MVP",
+          "W6 PRD · Gate 2"
+        ]
+      },
+      {
+        "t": "开发推进期",
+        "s": "W7–9",
+        "cells": [
+          "W7 补常识拆任务",
+          "W8 AI Coding 跑 POC",
+          "W9 评审 · Gate 3"
+        ]
+      },
+      {
+        "t": "项目管理期",
+        "s": "W10–12",
+        "cells": [
+          "W10 里程碑与风险",
+          "W11 相关方",
+          "W12 复盘沉淀 · Gate 4"
+        ]
+      }
+    ],
+    "note": "Gate 都在 3 的倍数周末；没过退回本阶段「动手周」"
+  },
+  "visual2": {
+    "type": "grid",
+    "items": [
+      {
+        "i": "scale",
+        "t": "比例不变",
+        "d": "四阶段各占 25%"
+      },
+      {
+        "i": "hourglass",
+        "t": "立项≥2 周",
+        "d": "再急也不能更短"
+      },
+      {
+        "i": "layers",
+        "t": "可叠不可跳",
+        "d": "W6 与 W7 可稍重叠"
+      },
+      {
+        "i": "xcircle",
+        "t": "不是 Sprint",
+        "d": "每周初稿，关注人和流程"
+      }
+    ],
+    "note": "8 周或 16 周都按比例伸缩"
+  },
+  "keys": [
+    {
+      "v": "12 周",
+      "k": "习惯最短周期"
+    },
+    {
+      "v": "各 25%",
+      "k": "阶段比例"
+    },
+    {
+      "v": "≥2 周",
+      "k": "立项期下限"
+    },
+    {
+      "v": "W6 与 W7",
+      "k": "可稍重叠"
+    },
+    {
+      "v": "每两周",
+      "k": "Sprint 交付"
+    }
+  ],
+  "trap": "✗砍掉立项期/按6个Sprint跑 → ✓比例不变、可叠不可跳",
+  "mnemonic": "看判卡｜比画P｜拆跑评｜险人沉；比例不变、立项≥2 周、可叠不可跳",
+  "points": [
+    "记忆法：每阶段三周都是「一看、二做、三定稿」——第 1 周打基础，第 2 周动手，第 3 周定稿并过 Gate；Gate 在 W3/W6/W9/W12 末，没过退回本阶段动手周（Gate 1→W2、Gate 2→W4–W5、Gate 3→W8）",
+    "来源：养成一个工作习惯的最短周期是 12 周；短于 12 周是「体验」，长于 12 周客户失去耐心",
+    "伸缩原则：各阶段比例保持各 25% 不变，不能把某阶段砍到 0；立项期再急也不能少于 2 周，项目管理期再忙也不能省",
+    "可以重叠不能跳过：赶时间时 W6 与 W7 可稍重叠；跳过立项期=没有共识基础，跳过项目管理期=没有沉淀成资产",
+    "不是 Sprint：Sprint 每两周交付软件增量（关注软件），12 周每周交一个交付物初稿（关注人和流程）；跑成 6 个 Sprint 说明只做了开发推进期"
+  ],
+  "example": "某客户项目只有 8 周，项目经理想砍掉立项期直接开发。正确做法是四阶段各占 25%、每段约 2 周，立项期不少于 2 周；赶时间时可让 PRD 与拆任务稍重叠，但不能跳阶段。",
+  "src": "第 9 章 9.2",
+  "icon": "calendar"
+}
+```
