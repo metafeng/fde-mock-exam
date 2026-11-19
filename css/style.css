@@ -1090,3 +1090,19 @@ button.cp-card:hover{box-shadow:0 0 0 1.5px var(--accent);color:var(--accent)}
 }
 html.touch .opt:hover:not(.sel):not(.is-right):not(.is-wrong){border-color:var(--line)}
 html.touch .opt:hover:not(.sel):not(.is-right):not(.is-wrong) .key{border-color:#c5c8ce;color:var(--ink-2)}
+/* 多选考点 */
+.mc-toggle{display:inline-flex;align-items:center;gap:6px;height:34px;padding:0 12px;border-radius:9px;border:1.5px solid #f6dfb8;background:#fffaf0;color:#a8530a;font:600 13px/1 inherit;cursor:pointer;margin-left:auto;margin-right:8px}
+.mc-toggle small{font-size:11px;font-weight:700;background:#ffe9c7;border-radius:999px;padding:2px 7px}
+.mc-toggle.on{background:#e8890c;border-color:#e8890c;color:#fff}
+.mc-toggle.on small{background:rgba(255,255,255,.25);color:#fff}
+.mc-badge{display:inline-flex;align-items:center;font-size:11px;font-weight:700;color:#a8530a;background:#fff1dc;border-radius:999px;padding:2px 8px;margin-left:6px;white-space:nowrap;font-style:normal}
+.cl-main b .mc-badge{font-size:10.5px;padding:1px 7px}
+.cb-meta .mc-badge{margin-left:0}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .mc-toggle{background:#2e2414;border-color:#5a4220;color:#ffbf70}:root:not([data-theme="light"]) .mc-badge{background:#3a2a12;color:#ffbf70}}
+@media (max-width:820px){.mc-toggle{margin-left:0;order:3}}
+@media (max-width:820px){
+  .cv-tools{gap:8px}
+  .mc-toggle{order:-1;flex-basis:100%;justify-content:center;margin:0;height:36px}
+  .cv-tools .ios-seg{flex:1;min-width:0}
+  .cv-tools .ios-seg button{white-space:nowrap;flex:1;padding:0 8px}
+}

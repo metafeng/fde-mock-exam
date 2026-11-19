@@ -36,7 +36,19 @@
   let P = Object.assign({ mod: "all", view: "card", filter: "new" }, load(PREF_KEY, {}));
   let queue = [], pos = 0, flipped = false;
   const st = () => load(CARD_KEY, {});
-  const pool = () => G.filter((g) => P.mod === "all" || g.m === +P.mod);
+  // ---- 多选考点：名称带数量的清单型概念（三类、五件套、八问…），或图解为并列清单且常出多选题 ----
+  const CN = { 两: 2, 二: 2, 三: 3, 四: 4, 五: 5, 六: 6, 七: 7, 八: 8, 九: 9, 十: 10 };
+  const NUM_RE = /([两二三四五六七八九十]|[2-9])\s*(类|道|层|步|条|项|个|问|件|要素|环节|阶段|维|态|端|档|种|大|句|位置|属性|动作|纪律|方向|红线|检查项|前提|规则|件套)/;
+  G.forEach((g) => {
+    const v = g.visual || {}, items = v.type === "compare" ? 0 : (v.items || v.rows || []).length;
+    const m = g.term.match(NUM_RE);
+    const mq = related(g).filter((i) => BANK[i].t === "m").length;
+    const listy = ["grid", "flow", "stack", "cycle", "levels", "matrix"].includes(v.type) && items >= 3;
+    if (m) g.mc = { list: true, n: CN[m[1]] || +m[1], mq };
+    else if (listy && mq >= 3) g.mc = { list: false, n: items, mq };
+  });
+  const mcBadge = (g) => g.mc ? `<span class="mc-badge" title="${g.mc.list ? "清单型概念" : "常出多选"}：相关多选题 ${g.mc.mq} 道">多选 · ${g.mc.n} 项</span>` : "";
+  const pool = () => G.filter((g) => (P.mod === "all" || g.m === +P.mod) && (!P.multi || g.mc));
 
   function buildQueue() {
     const s = st();
@@ -44,6 +56,7 @@
     if (P.filter === "new") list = list.filter((g) => !(s[g.id] && s[g.id].k === 1));
     // 标过「不认识」的排最前，其次没看过的，组内按优先级
     list.sort((a, b) => {
+      if (P.multi && a.mc && b.mc && a.mc.list !== b.mc.list) return a.mc.list ? -1 : 1;
       const ra = s[a.id] ? (s[a.id].k === 0 ? 0 : 2) : 1, rb = s[b.id] ? (s[b.id].k === 0 ? 0 : 2) : 1;
       return ra - rb || priority(b) - priority(a);
     });
@@ -68,6 +81,12 @@
       return chip(m, md[0], `${k}/${ts.length}`);
     }).join("");
     $("#cvMods").querySelectorAll("button").forEach((b) => (b.onclick = () => { P.mod = b.dataset.mod; store(PREF_KEY, P); buildQueue(); render(); }));
+    const mb = $("#cvMulti");
+    if (mb) {
+      const n = G.filter((g) => g.mc && (P.mod === "all" || g.m === +P.mod)).length;
+      $("#cvMultiN").textContent = n; mb.classList.toggle("on", !!P.multi); mb.setAttribute("aria-pressed", String(!!P.multi));
+      mb.onclick = () => { P.multi = !P.multi; store(PREF_KEY, P); buildQueue(); render(); };
+    }
     [["#cvView", "view"], ["#cvFilter", "filter"]].forEach(([sel, key]) => $(sel).querySelectorAll("button").forEach((b) => {
       b.classList.toggle("on", P[key] === b.dataset.v);
       b.onclick = () => { P[key] = b.dataset.v; store(PREF_KEY, P); buildQueue(); render(); };
@@ -350,12 +369,12 @@
       <div class="flash ${flipped ? "flipped" : ""}" id="flash" tabindex="0" role="button" aria-label="翻面">
         <div class="flash-front">
           ${tile(g, "big")}
-          <div><span class="cf-mod">${esc(MODULES[g.m][0])}</span>${badge}</div>
+          <div><span class="cf-mod">${esc(MODULES[g.m][0])}</span>${badge}${mcBadge(g)}</div>
           <h2>${esc(g.term)}</h2>
           ${(g.aliases || []).length ? `<p class="cf-alias">${g.aliases.map(esc).join(" · ")}</p>` : ""}
           <p class="cf-hint">先想一想它是什么意思，再点卡片看答案</p>
         </div>
-        <div class="flash-back"><div class="cb-head">${tile(g)}<div><h3>${esc(g.term)}</h3><div class="cb-meta"><span class="cf-mod">${esc(MODULES[g.m][0])}</span>${srcHtml(g.src)}</div></div></div>${backHtml(g)}</div>
+        <div class="flash-back"><div class="cb-head">${tile(g)}<div><h3>${esc(g.term)}</h3><div class="cb-meta"><span class="cf-mod">${esc(MODULES[g.m][0])}</span>${mcBadge(g)}${srcHtml(g.src)}</div></div></div>${backHtml(g)}</div>
       </div>
       <div class="cv-act">
         ${flipped
@@ -394,7 +413,7 @@
       <section class="cl-group"><h4>${esc(MODULES[m][0])}<small>${items.filter((g) => s[g.id] && s[g.id].k === 1).length} / ${items.length} 已掌握</small></h4>
         ${items.map((g) => { const k = s[g.id] && s[g.id].k === 1; return `
           <details class="cl-item ${k ? "known" : ""}">
-            <summary>${tile(g, "sm")}<div class="cl-main"><b>${esc(g.term)}${k ? `<i class="cl-ok" title="已掌握">✓</i>` : ""}</b><span>${esc(g.plain)}</span></div>${g.mnemonic ? `<span class="cl-mn" title="${esc(g.mnemonic)}">${esc(g.mnemonic)}</span>` : ""}<span class="cl-chev" aria-hidden="true"></span></summary>
+            <summary>${tile(g, "sm")}<div class="cl-main"><b>${esc(g.term)}${k ? `<i class="cl-ok" title="已掌握">✓</i>` : ""}${mcBadge(g)}</b><span>${esc(g.plain)}</span></div>${g.mnemonic ? `<span class="cl-mn" title="${esc(g.mnemonic)}">${esc(g.mnemonic)}</span>` : ""}<span class="cl-chev" aria-hidden="true"></span></summary>
             <div class="cl-body"><div class="cb-meta cl-src">${srcHtml(g.src)}</div>${backHtml(g)}
               <div class="cl-act"><button type="button" class="btn ${k ? "" : "primary"}" data-k="${g.id}">${k ? "标为没掌握" : "标为已掌握"}</button></div>
             </div>
