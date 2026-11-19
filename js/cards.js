@@ -34,7 +34,7 @@
   const priority = (g) => MODULES[g.m][1] * 3 + Math.min(related(g).length, 12) - g.rank * 0.8;
 
   let P = Object.assign({ mod: "all", view: "card", filter: "new" }, load(PREF_KEY, {}));
-  let queue = [], pos = 0, flipped = false;
+  let queue = [], pos = 0, flipped = false, doneN = 0; // doneN：本轮已刷张数
   const st = () => load(CARD_KEY, {});
   // ---- 多选考点：名称带数量的清单型概念（三类、五件套、八问…），或图解为并列清单且常出多选题 ----
   const CN = { 两: 2, 二: 2, 三: 3, 四: 4, 五: 5, 六: 6, 七: 7, 八: 8, 九: 9, 十: 10 };
@@ -62,7 +62,7 @@
       const ra = rank(a), rb = rank(b);
       return ra - rb || priority(b) - priority(a);
     });
-    queue = list; pos = 0; flipped = false;
+    queue = list; pos = 0; flipped = false; doneN = 0;
   }
 
   function mark(g, known) {
@@ -367,7 +367,7 @@
     const g = queue[pos], s = st()[g.id];
     const badge = s ? (s.k === 2 ? `<span class="cf-badge ok">已掌握</span>` : s.k === 1 ? `<span class="cf-badge seen">认识</span>` : `<span class="cf-badge no">不认识 ×${s.n}</span>`) : `<span class="cf-badge">新</span>`;
     body.innerHTML = `
-      <div class="cv-count">第 ${pos + 1} / ${queue.length} 张</div>
+      <div class="cv-count" id="cvCount">${P.filter === "new" ? `本轮已刷 <b>${doneN}</b> 张 · 未掌握 <b>${queue.length}</b> 张` : `第 ${pos + 1} / ${queue.length} 张`}</div>
       <div class="flash ${flipped ? "flipped" : ""}" id="flash" tabindex="0" role="button" aria-label="翻面">
         <div class="flash-front">
           ${tile(g, "big")}
@@ -406,8 +406,10 @@
     if (level === 0) queue.splice(Math.min(pos + 4, queue.length), 0, g);
     else if (level === 1) { if (P.filter === "new") queue.push(g); else { queue.splice(pos, 0, g); pos++; } }
     else if (P.filter !== "new") { queue.splice(pos, 0, g); pos++; }
-    flipped = false;
+    flipped = false; doneN++;
     renderHead(); renderCard();
+    // 卡片背面很长，点完按钮后页面可能停在底部；回到下一张卡片的顶部
+    const c = $("#cvCount"); if (c && c.getBoundingClientRect().top < 0) c.scrollIntoView({ block: "start", behavior: "smooth" });
   }
 
   // ---- 列表速览 ----
